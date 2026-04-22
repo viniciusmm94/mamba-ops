@@ -19,7 +19,7 @@ if st.button("Atualizar Colaboradores"):
             df = pd.DataFrame(dados)
             st.write("DataFrame criado")  # 👈 DEBUG 2
 
-            st.dataframe(df, width="stretch", height=800)
+           # st.dataframe(df, width="stretch", height=800)
 
             st.write("Chamando salvar...")  # 👈 DEBUG 3
 
