@@ -18,7 +18,7 @@ def salvar_no_sheets(dados):
     client = gspread.authorize(credentials)
 
     planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
-    aba = planilha.sheet1
+    aba = planilha.worksheet("Colaboradores")
 
     aba.clear()
 
