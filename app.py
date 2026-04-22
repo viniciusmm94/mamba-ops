@@ -9,22 +9,17 @@ st.title("Mamba Ops")
 
 if st.button("Atualizar Colaboradores"):
 
-    with st.spinner("Buscando dados da Pontomais..."):
+    listar_colaboradores_ativos.clear()  # 🔥 limpa cache
 
-        try:
-            dados = listar_colaboradores_ativos()
+    dados = listar_colaboradores_ativos()
 
-            df = pd.DataFrame(dados)
+    df = pd.DataFrame(dados)
 
-            st.success(f"{len(df)} colaboradores carregados")
+    st.dataframe(df, width="stretch", height=800)
 
-            # 🔥 MOSTRA NA TELA
-            st.dataframe(df, width="stretch", height=800)
+    salvar_no_sheets(dados)
 
-            # 🔥 SALVA NO SHEETS
-            salvar_no_sheets(dados)
-
-            st.success("Dados enviados para o Google Sheets")
+    st.success("Dados enviados para o Google Sheets")
 
         except Exception as e:
             st.error(str(e))
