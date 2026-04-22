@@ -18,9 +18,11 @@ if st.button("Atualizar Colaboradores"):
 
             st.success(f"{len(df)} colaboradores carregados")
 
+            # 🔥 MOSTRA NA TELA
             st.dataframe(df, width="stretch", height=800)
 
-            salvar_no_sheets([{"Nome": "TESTE", "Email": "OK"}])
+            # 🔥 SALVA NO SHEETS
+            salvar_no_sheets(dados)
 
             st.success("Dados enviados para o Google Sheets")
 
