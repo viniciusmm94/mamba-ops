@@ -24,8 +24,12 @@ def get_client():
         "https://www.googleapis.com/auth/drive"
     ]
 
+    import json
+
+    creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
-        st.secrets["GOOGLE_CREDENTIALS"],
+        creds_dict,
         scope
     )
 
