@@ -58,18 +58,13 @@ def registrar_controle_diario():
     # COLABORADORES
     # =========================
 
-    col_data = colaboradores.get_all_values()
-    header_col = col_data[0]
-    rows_col = col_data[1:]
-
-    col_nome_idx = header_col.index("Nome")
-    col_lider_idx = header_col.index("Equipe") if "Equipe" in header_col else 4
+    col_data = colaboradores.get_all_values()[1:]
 
     colaboradores_map = {}
 
-    for r in rows_col:
-        nome = (r[col_nome_idx] or "").strip()
-        lider = (r[col_lider_idx] or "").strip()
+    for r in col_data:
+        nome = (r[1] or "").strip()
+        lider = (r[4] or "").strip()
 
         if not nome or nome in NOMES_EXCLUIDOS:
             continue
@@ -77,7 +72,7 @@ def registrar_controle_diario():
         colaboradores_map[nome] = lider
 
     # =========================
-    # RESUMO DO DIA
+    # RESUMO
     # =========================
 
     resumo_all = resumo.get_all_values()
