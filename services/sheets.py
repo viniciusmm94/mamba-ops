@@ -1,24 +1,23 @@
 import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
-from google.oauth2.service_account import Credentials
 
+def salvar_no_sheets(dados):
 
-def salvar_no_sheets(dados, nome_aba="Colaboradores"):
     scope = [
-        "https://www.googleapis.com/auth/spreadsheets",
+        "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive"
     ]
 
     creds_dict = dict(st.secrets["GOOGLE_CREDENTIALS"])
-    credentials = Credentials.from_service_account_info(creds_dict, scopes=scope)
-    client = gspread.authorize(credentials)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
+    client = gspread.authorize(creds)
 
     planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
 
-    try:
-        aba = planilha.worksheet(nome_aba)
-    except:
-        aba = planilha.add_worksheet(title=nome_aba, rows=1000, cols=20)
+    # 👇 usa sempre a mesma aba (como antes)
+    aba = planilha.sheet1
 
     aba.clear()
 
