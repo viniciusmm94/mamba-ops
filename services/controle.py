@@ -1,13 +1,13 @@
 import streamlit as st
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import json
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
 NOMES_EXCLUIDOS = {
     'Anthony Chub Generoso',
     'Ariane de Queiroz Proença Fernandes',
-    # ... mantém todos
 }
 
 EXCECOES_ATRASO = {
@@ -24,8 +24,6 @@ def get_client():
         "https://www.googleapis.com/auth/drive"
     ]
 
-    import json
-
     creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
@@ -39,9 +37,7 @@ def get_client():
 def normalizar_hora(valor):
     if not valor:
         return ""
-
-    valor = str(valor).strip().replace("h", ":")
-    return valor
+    return str(valor).strip().replace("h", ":")
 
 
 def registrar_controle_diario():
@@ -55,55 +51,61 @@ def registrar_controle_diario():
     try:
         controle = planilha.worksheet("Controle Diário")
     except:
-        controle = planilha.add_worksheet("Controle Diário", 1000, 5)
+        controle = planilha.add_worksheet(title="Controle Diário", rows=1000, cols=5)
         controle.append_row(["Data", "Nome", "Líder", "Status", "Horário"])
 
     # =========================
     # COLABORADORES
     # =========================
 
-    col_data = colaboradores.get_all_values()[1:]
+    col_data = colaboradores.get_all_values()
+    header_col = col_data[0]
+    rows_col = col_data[1:]
+
+    col_nome_idx = header_col.index("Nome")
+    col_lider_idx = header_col.index("Equipe") if "Equipe" in header_col else 4
 
     colaboradores_map = {}
 
-    for r in col_data:
-        nome = (r[1] or "").strip()
-        lider = (r[4] or "").strip()
+    for r in rows_col:
+        nome = (r[col_nome_idx] or "").strip()
+        lider = (r[col_lider_idx] or "").strip()
 
         if not nome or nome in NOMES_EXCLUIDOS:
             continue
 
         colaboradores_map[nome] = lider
 
-# =========================
-# RESUMO DO DIA
-# =========================
+    # =========================
+    # RESUMO DO DIA
+    # =========================
 
-resumo_all = resumo.get_all_values()
+    resumo_all = resumo.get_all_values()
+    header = resumo_all[0]
+    rows = resumo_all[1:]
 
-header = resumo_all[0]
-rows = resumo_all[1:]
+    col_nome = header.index("Nome")
+    col_hora = header.index("Entrada 1")
+    col_data = header.index("Data")
 
-# 🔥 índices dinâmicos (fora do loop)
-col_nome = header.index("Nome")
-col_hora = header.index("Entrada 1")
-col_data = header.index("Data")
+    quem_bateu = {}
+    data_ponto = None
 
-quem_bateu = {}
-data_ponto = None
+    for r in rows:
+        nome = (r[col_nome] or "").strip()
+        hora = r[col_hora]
+        data_raw = r[col_data]
 
-for r in rows:
-    nome = (r[col_nome] or "").strip()
-    hora = r[col_hora]
-    data_raw = r[col_data] if len(r) > col_data else None
+        if not data_ponto and data_raw:
+            data_ponto = str(data_raw).strip()
 
-    if not data_ponto and data_raw:
-        data_ponto = str(data_raw).strip()
+        if not nome or not hora:
+            continue
 
-    if not nome or not hora:
-        continue
+        quem_bateu[nome] = hora
 
-    quem_bateu[nome] = hora
+    if not data_ponto:
+        raise Exception("Data do ponto não encontrada")
 
     # =========================
     # DEDUP
