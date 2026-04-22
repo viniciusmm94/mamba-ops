@@ -3,6 +3,7 @@ import pandas as pd
 
 from services.pontomais import listar_colaboradores_ativos, resumo_ponto_por_data
 from services.sheets import salvar_no_sheets
+from services.controle import registrar_controle_diario
 
 st.set_page_config(layout="wide")
 st.title("Mamba Ops")
@@ -55,3 +56,19 @@ if st.button("Buscar Ponto"):
 
         except Exception as e:
             st.error(str(e))
+
+                    # ==============================
+        # 🔹 BLOCO 3 — CONTROLE DIÁRIO
+        # ==============================
+
+        st.subheader("Controle Diário")
+
+        if st.button("Gerar Controle"):
+
+            with st.spinner("Processando controle..."):
+                try:
+                    qtd = registrar_controle_diario()
+                    st.success(f"{qtd} registros adicionados")
+
+                except Exception as e:
+                    st.error(str(e))
