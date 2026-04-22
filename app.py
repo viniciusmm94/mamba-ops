@@ -14,14 +14,14 @@ if st.button("Atualizar Colaboradores"):
 
         try:
             dados = listar_colaboradores_ativos()
-            df = pd.DataFrame(dados)
+            st.write("Dados recebidos")  # 👈 DEBUG 1
 
-            st.success(f"{len(df)} colaboradores carregados")
+            df = pd.DataFrame(dados)
+            st.write("DataFrame criado")  # 👈 DEBUG 2
 
             st.dataframe(df, width="stretch", height=800)
 
-            # 👇 FORÇA execução visível
-            st.write("Chamando salvar...")
+            st.write("Chamando salvar...")  # 👈 DEBUG 3
 
             salvar_no_sheets(dados)
 
