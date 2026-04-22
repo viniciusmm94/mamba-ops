@@ -106,6 +106,10 @@ def resumo_ponto_por_data(data_br):
         if i == 0:
             continue
 
+        # 🔥 evita quebra
+        if len(row) < 4:
+            continue
+
         nome = row[0].strip()
         lider = row[1].strip()
         hora = row[3].strip()
