@@ -1,7 +1,9 @@
-import streamlit as st
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import json
+def normalizar_hora(valor):
+    if not valor:
+        return ""
+
+    return str(valor).strip().replace("h", ":")
+
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
@@ -18,53 +20,17 @@ EXCECOES_ATRASO = {
 }
 
 
-def get_client():
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive"
-    ]
-
-    creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
-
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(
-        creds_dict,
-        scope
-    )
-
-    return gspread.authorize(creds)
-
-
-def normalizar_hora(valor):
-    if not valor:
-        return ""
-    return str(valor).strip().replace("h", ":")
-
-
-def registrar_controle_diario():
-
-    client = get_client()
-    planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
-
-    resumo = planilha.worksheet("Resumo Ponto Hoje")
-    colaboradores = planilha.worksheet("Colaboradores")
-
-    try:
-        controle = planilha.worksheet("Controle Diário")
-    except:
-        controle = planilha.add_worksheet(title="Controle Diário", rows=1000, cols=5)
-        controle.append_row(["Data", "Nome", "Líder", "Status", "Horário"])
+def registrar_controle_diario(dados_resumo, colaboradores):
 
     # =========================
-    # COLABORADORES
+    # MAPA DE COLABORADORES
     # =========================
-
-    col_data = colaboradores.get_all_values()[1:]
 
     colaboradores_map = {}
 
-    for r in col_data:
-        nome = (r[1] or "").strip()
-        lider = (r[4] or "").strip()
+    for c in colaboradores:
+        nome = (c.get("Nome") or "").strip()
+        lider = (c.get("Equipe") or "").strip()
 
         if not nome or nome in NOMES_EXCLUIDOS:
             continue
@@ -72,34 +38,19 @@ def registrar_controle_diario():
         colaboradores_map[nome] = lider
 
     # =========================
-    # RESUMO
+    # RESUMO DO DIA
     # =========================
-
-    resumo_all = resumo.get_all_values()
-    header = resumo_all[0]
-    rows = resumo_all[1:]
-    st.write("HEADER REAL:", header)
-
-    def find_col(header, nome):
-        for i, col in enumerate(header):
-            if col.strip().lower() == nome.strip().lower():
-                return i
-        raise Exception(f"Coluna '{nome}' não encontrada. Header atual: {header}")
-
-    col_nome = find_col(header, "Nome")
-    col_hora = find_col(header, "Entrada 1")
-    col_data = find_col(header, "Data")
 
     quem_bateu = {}
     data_ponto = None
 
-    for r in rows:
-        nome = (r[col_nome] or "").strip()
-        hora = r[col_hora]
-        data_raw = r[col_data]
+    for d in dados_resumo:
+        nome = (d.get("Nome") or "").strip()
+        hora = d.get("Entrada 1")
+        data_raw = d.get("Data")
 
         if not data_ponto and data_raw:
-            data_ponto = str(data_raw).strip()
+            data_ponto = data_raw
 
         if not nome or not hora:
             continue
@@ -109,20 +60,7 @@ def registrar_controle_diario():
     if not data_ponto:
         raise Exception("Data do ponto não encontrada")
 
-    # =========================
-    # DEDUP
-    # =========================
-
-    existentes = set()
-
-    for r in controle.get_all_values()[1:]:
-        data = str(r[0]).strip()
-        nome = (r[1] or "").strip()
-
-        if data and nome:
-            existentes.add(f"{data}|{nome}")
-
-    novas_linhas = []
+    resultado = []
 
     # =========================
     # ATRASADOS
@@ -136,17 +74,14 @@ def registrar_controle_diario():
         hora = normalizar_hora(hora_raw)
         limite = EXCECOES_ATRASO.get(nome, LIMITE_PADRAO_ATRASO)
 
-        chave = f"{data_ponto}|{nome}"
-
-        if hora > limite and chave not in existentes:
-            novas_linhas.append([
-                data_ponto,
-                nome,
-                colaboradores_map.get(nome, ""),
-                "Atrasado",
-                hora
-            ])
-            existentes.add(chave)
+        if hora > limite:
+            resultado.append({
+                "Data": data_ponto,
+                "Nome": nome,
+                "Líder": colaboradores_map.get(nome, ""),
+                "Status": "Atrasado",
+                "Horário": hora
+            })
 
     # =========================
     # AUSENTES
@@ -154,23 +89,13 @@ def registrar_controle_diario():
 
     for nome, lider in colaboradores_map.items():
 
-        chave = f"{data_ponto}|{nome}"
+        if nome not in quem_bateu:
+            resultado.append({
+                "Data": data_ponto,
+                "Nome": nome,
+                "Líder": lider,
+                "Status": "Ausente",
+                "Horário": ""
+            })
 
-        if nome not in quem_bateu and chave not in existentes:
-            novas_linhas.append([
-                data_ponto,
-                nome,
-                lider,
-                "Ausente",
-                ""
-            ])
-            existentes.add(chave)
-
-    # =========================
-    # SALVAR
-    # =========================
-
-    if novas_linhas:
-        controle.append_rows(novas_linhas)
-
-    return len(novas_linhas)
+    return resultado
