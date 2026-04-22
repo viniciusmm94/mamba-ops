@@ -23,8 +23,8 @@ if st.button("Atualizar Colaboradores"):
             st.success(f"{len(df)} colaboradores carregados")
             st.dataframe(df, width="stretch", height=800)
 
-            # 🔥 salva na aba correta
-            salvar_no_sheets(dados, "Colaboradores")
+            # 🔥 versão estável
+            salvar_no_sheets(dados)
 
             st.success("Dados enviados para o Google Sheets")
 
@@ -38,10 +38,7 @@ if st.button("Atualizar Colaboradores"):
 
 st.subheader("Resumo de Ponto por Data")
 
-# 🔥 melhor UX (evita erro de digitação)
 data_input = st.date_input("Selecione a data")
-
-# converte para formato esperado
 data = data_input.strftime("%d/%m/%Y")
 
 if st.button("Buscar Ponto"):
@@ -53,13 +50,10 @@ if st.button("Buscar Ponto"):
 
             st.dataframe(df, width="stretch")
 
-            # 🔥 salva na aba correta
-            salvar_no_sheets(dados, "Resumo Ponto Hoje")
+            # 🔥 mesma aba (igual antes)
+            salvar_no_sheets(dados)
 
             st.success("Ponto enviado para o Google Sheets")
 
         except Exception as e:
             st.error(str(e))
-
-            st.write(type(dados))
-            st.write(dados[:2])
