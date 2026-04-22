@@ -12,11 +12,9 @@ def salvar_no_sheets(dados):
         "https://www.googleapis.com/auth/drive"
     ]
 
-    # 👇 PEGA STRING DO SECRETS
-    creds_json = st.secrets["GOOGLE_CREDENTIALS"]
+    creds_json = st.secrets["GOOGLE_CREDENTIALS"].strip()
 
-    # 👇 AJUSTA QUEBRA DE LINHA DO PRIVATE KEY
-    creds_dict = json.loads(creds_json.replace("\n", "\\n"))
+    creds_dict = json.loads(creds_json)
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
