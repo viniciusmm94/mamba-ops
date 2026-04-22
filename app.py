@@ -18,7 +18,7 @@ if st.button("Atualizar Colaboradores"):
 
             st.success(f"{len(df)} colaboradores carregados")
 
-            st.dataframe(df, use_container_width=True, height=600)
+            st.dataframe(df, use_container_width=True, height=800)
 
         except Exception as e:
             st.error(str(e))
