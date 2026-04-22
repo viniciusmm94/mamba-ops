@@ -20,7 +20,7 @@ def salvar_no_sheets(dados):
     planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
     aba = planilha.worksheet("Colaboradores")
 
-    aba.append_rows(rows)
+    aba.clear()
 
     if not dados:
         return
