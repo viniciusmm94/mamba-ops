@@ -1,7 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
-import json
 
 def salvar_no_sheets(dados):
 
@@ -12,9 +11,7 @@ def salvar_no_sheets(dados):
         "https://www.googleapis.com/auth/drive"
     ]
 
-    creds_json = st.secrets["GOOGLE_CREDENTIALS"].strip()
-
-    creds_dict = json.loads(creds_json)
+    creds_dict = dict(st.secrets["GOOGLE_CREDENTIALS"])
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
