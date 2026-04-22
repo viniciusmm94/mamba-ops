@@ -1,0 +1,22 @@
+import streamlit as st
+import pandas as pd
+
+from services.pontomais import listar_colaboradores_ativos
+
+st.title("Mamba Ops")
+
+if st.button("Atualizar Colaboradores"):
+
+    with st.spinner("Buscando dados da Pontomais..."):
+
+        try:
+            dados = listar_colaboradores_ativos()
+
+            df = pd.DataFrame(dados)
+
+            st.success(f"{len(df)} colaboradores carregados")
+
+            st.dataframe(df)
+
+        except Exception as e:
+            st.error(str(e))
