@@ -28,3 +28,13 @@ if st.button("Atualizar Colaboradores"):
 
         except Exception as e:
             st.error(str(e))
+
+            data = st.text_input("Data (DD/MM/AAAA)")
+
+        if st.button("Buscar Ponto"):
+            dados = resumo_ponto_por_data(data)
+            df = pd.DataFrame(dados)
+
+            st.dataframe(df)
+
+            salvar_no_sheets(dados)
