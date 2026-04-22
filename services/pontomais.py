@@ -2,7 +2,9 @@ import requests
 import time
 
 BASE_URL = "https://api.pontomais.com.br/external_api/v1"
-TOKEN = "$2a$12$kiNqocLYpbeNZniRwBjMhu/Ekqjs1uGFpMciXlTONRjECy8ZpJJE6"
+import streamlit as st
+
+TOKEN = st.secrets["PONTOMAIS_TOKEN"]
 
 
 def listar_colaboradores_ativos():
