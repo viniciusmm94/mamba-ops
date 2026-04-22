@@ -114,6 +114,13 @@ def resumo_ponto_por_data(data_br):
         lider = row[1].strip()
         hora = row[3].strip()
 
+        # 🔥 ignora header ou lixo
+        if hora.lower() == "hora":
+            continue
+
+        if not nome or not hora:
+            continue        
+
         if not nome or not hora:
             continue
 
