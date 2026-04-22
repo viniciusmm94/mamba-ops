@@ -57,18 +57,19 @@ if st.button("Buscar Ponto"):
         except Exception as e:
             st.error(str(e))
 
-                    # ==============================
-        # 🔹 BLOCO 3 — CONTROLE DIÁRIO
-        # ==============================
 
-        st.subheader("Controle Diário")
+# ==============================
+# 🔹 BLOCO 3 — CONTROLE DIÁRIO
+# ==============================
 
-        if st.button("Gerar Controle"):
+st.subheader("Controle Diário")
 
-            with st.spinner("Processando controle..."):
-                try:
-                    qtd = registrar_controle_diario()
-                    st.success(f"{qtd} registros adicionados")
+if st.button("Gerar Controle"):
 
-                except Exception as e:
-                    st.error(str(e))
+    with st.spinner("Processando controle..."):
+        try:
+            qtd = registrar_controle_diario()
+            st.success(f"{qtd} registros adicionados")
+
+        except Exception as e:
+            st.error(str(e))
