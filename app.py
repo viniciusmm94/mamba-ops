@@ -23,7 +23,6 @@ if st.button("Atualizar Colaboradores"):
             st.success(f"{len(df)} colaboradores carregados")
             st.dataframe(df, width="stretch", height=800)
 
-            # 🔥 versão estável
             salvar_no_sheets(dados)
 
             st.success("Dados enviados para o Google Sheets")
@@ -50,7 +49,6 @@ if st.button("Buscar Ponto"):
 
             st.dataframe(df, width="stretch")
 
-            # 🔥 mesma aba (igual antes)
             salvar_no_sheets(dados)
 
             st.success("Ponto enviado para o Google Sheets")
