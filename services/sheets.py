@@ -1,7 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
-import json
 
 def salvar_no_sheets(dados):
 
@@ -12,11 +11,13 @@ def salvar_no_sheets(dados):
 
     creds_dict = dict(st.secrets["GOOGLE_CREDENTIALS"])
 
+    # 🔥 CORREÇÃO REAL
+    creds_dict["private_key"] = creds_dict["private_key"].replace("\r\n", "\n")
+
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
 
     planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
-
     aba = planilha.sheet1
 
     aba.clear()
