@@ -1,11 +1,9 @@
 import gspread
 import streamlit as st
-import json
 from google.oauth2.service_account import Credentials
 
 
 def salvar_no_sheets(dados, nome_aba="Colaboradores"):
-
     scope = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
@@ -15,9 +13,8 @@ def salvar_no_sheets(dados, nome_aba="Colaboradores"):
     credentials = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(credentials)
 
-    planilha = client.open_by_key("SEU_ID_AQUI")
+    planilha = client.open_by_key("1l4tvrE8A906ctO3xJjlTQx1Lw58yewxTN83cGfZMJ6M")
 
-    # 🔥 cria ou usa aba correta
     try:
         aba = planilha.worksheet(nome_aba)
     except:
