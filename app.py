@@ -60,3 +60,6 @@ if st.button("Buscar Ponto"):
 
         except Exception as e:
             st.error(str(e))
+
+            st.write(type(dados))
+            st.write(dados[:2])
