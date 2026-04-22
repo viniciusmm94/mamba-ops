@@ -78,10 +78,17 @@ def registrar_controle_diario():
     resumo_all = resumo.get_all_values()
     header = resumo_all[0]
     rows = resumo_all[1:]
+    st.write("HEADER REAL:", header)
 
-    col_nome = header.index("Nome")
-    col_hora = header.index("Entrada 1")
-    col_data = header.index("Data")
+    def find_col(header, nome):
+        for i, col in enumerate(header):
+            if col.strip().lower() == nome.strip().lower():
+                return i
+        raise Exception(f"Coluna '{nome}' não encontrada. Header atual: {header}")
+
+    col_nome = find_col(header, "Nome")
+    col_hora = find_col(header, "Entrada 1")
+    col_data = find_col(header, "Data")
 
     quem_bateu = {}
     data_ponto = None
