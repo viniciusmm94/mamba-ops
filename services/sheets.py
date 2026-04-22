@@ -1,10 +1,9 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
+import json
 
 def salvar_no_sheets(dados):
-
-    print(">>> EXECUTANDO SALVAR NO SHEETS")
 
     scope = [
         "https://spreadsheets.google.com/feeds",
