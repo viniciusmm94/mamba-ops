@@ -1,40 +1,52 @@
 import streamlit as st
 import pandas as pd
 
-from services.pontomais import listar_colaboradores_ativos
+from services.pontomais import listar_colaboradores_ativos, resumo_ponto_por_data
 from services.sheets import salvar_no_sheets
 
 st.set_page_config(layout="wide")
 st.title("Mamba Ops")
 
+# ==============================
+# 🔹 BLOCO 1 — COLABORADORES
+# ==============================
+
 if st.button("Atualizar Colaboradores"):
 
     with st.spinner("Buscando dados da Pontomais..."):
-
         try:
             dados = listar_colaboradores_ativos()
-
             df = pd.DataFrame(dados)
 
             st.success(f"{len(df)} colaboradores carregados")
-
-            # 🔥 MOSTRA NA TELA
             st.dataframe(df, width="stretch", height=800)
 
-            # 🔥 SALVA NO SHEETS
             salvar_no_sheets(dados)
-
             st.success("Dados enviados para o Google Sheets")
 
         except Exception as e:
             st.error(str(e))
 
-            data = st.text_input("Data (DD/MM/AAAA)")
 
-        if st.button("Buscar Ponto"):
+# ==============================
+# 🔹 BLOCO 2 — PONTO POR DATA
+# ==============================
+
+st.subheader("Resumo de Ponto por Data")
+
+data = st.text_input("Data (DD/MM/AAAA)")
+
+if st.button("Buscar Ponto"):
+
+    with st.spinner("Buscando dados de ponto..."):
+        try:
             dados = resumo_ponto_por_data(data)
             df = pd.DataFrame(dados)
 
-            st.dataframe(df)
+            st.dataframe(df, width="stretch")
 
             salvar_no_sheets(dados)
+            st.success("Ponto enviado para o Google Sheets")
+
+        except Exception as e:
+            st.error(str(e))
