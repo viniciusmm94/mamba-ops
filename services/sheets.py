@@ -1,5 +1,6 @@
 import gspread
 import streamlit as st
+import json
 from google.oauth2.service_account import Credentials
 
 
@@ -10,14 +11,7 @@ def salvar_no_sheets(dados):
         "https://www.googleapis.com/auth/drive"
     ]
 
-    creds_dict = dict(st.secrets["GOOGLE_CREDENTIALS"])
-
-    # 🔥 NORMALIZAÇÃO COMPLETA (resolve padding definitivamente)
-    private_key = creds_dict["private_key"]
-    private_key = private_key.replace("\r\n", "\n").replace("\r", "\n")
-    private_key = private_key.strip()
-
-    creds_dict["private_key"] = private_key
+    creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 
     credentials = Credentials.from_service_account_info(creds_dict, scopes=scope)
 
