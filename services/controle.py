@@ -75,30 +75,35 @@ def registrar_controle_diario():
 
         colaboradores_map[nome] = lider
 
-    # =========================
-    # RESUMO DO DIA
-    # =========================
+# =========================
+# RESUMO DO DIA
+# =========================
 
-    resumo_data = resumo.get_all_values()[1:]
+resumo_all = resumo.get_all_values()
 
-    quem_bateu = {}
-    data_ponto = None
+header = resumo_all[0]
+rows = resumo_all[1:]
 
-    for r in resumo_data:
-        nome = (r[0] or "").strip()
-        hora = r[3]
-        data_raw = r[11] if len(r) > 11 else None
+# 🔥 índices dinâmicos (fora do loop)
+col_nome = header.index("Nome")
+col_hora = header.index("Entrada 1")
+col_data = header.index("Data")
 
-        if not data_ponto and data_raw:
-            data_ponto = str(data_raw).strip()
+quem_bateu = {}
+data_ponto = None
 
-        if not nome or not hora:
-            continue
+for r in rows:
+    nome = (r[col_nome] or "").strip()
+    hora = r[col_hora]
+    data_raw = r[col_data] if len(r) > col_data else None
 
-        quem_bateu[nome] = hora
+    if not data_ponto and data_raw:
+        data_ponto = str(data_raw).strip()
 
-    if not data_ponto:
-        raise Exception("Data do ponto não encontrada")
+    if not nome or not hora:
+        continue
+
+    quem_bateu[nome] = hora
 
     # =========================
     # DEDUP
