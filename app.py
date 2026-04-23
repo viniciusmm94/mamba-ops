@@ -150,11 +150,11 @@ with tabs[2]:
                 """
                 <div style="
                     background-color: #fff3cd;
-                    padding: 8px 12px;
-                    border-radius: 6px;
+                    padding: 6px 12px;
+                    border-radius: 5px;
                     color: #856404;
-                    font-size: 13px;
-                    margin-top: -8px;
+                    font-size: 11px;
+                    margin-top: -6px;
                     margin-bottom: 8px;
                 ">
                     Nenhuma ausência encontrada
