@@ -3,6 +3,13 @@ from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
 import json
 
+def append_row(sheet_name, row):
+    client = get_client()
+    planilha = client.open_by_key(SHEET_ID)
+
+    sheet = planilha.worksheet(sheet_name)
+    sheet.append_row(row)
+
 def salvar_no_sheets(dados):
 
     scope = [
@@ -56,3 +63,6 @@ def salvar_no_sheets(dados):
     ] for d in dados]
 
     aba.update("A1", [header] + rows)
+
+
+    

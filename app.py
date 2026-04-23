@@ -80,3 +80,26 @@ if st.button("Gerar Controle"):
 
         except Exception as e:
             st.error(str(e))
+
+
+            st.subheader("Cadastrar Férias Manual")
+
+nome = st.text_input("Nome completo")
+inicio = st.date_input("Data início", key="inicio")
+fim = st.date_input("Data fim", key="fim")
+
+if st.button("Salvar Férias"):
+
+    try:
+        from services.sheets import append_row
+
+        append_row("Ferias Manual", [
+            nome,
+            inicio.strftime("%d/%m/%Y"),
+            fim.strftime("%d/%m/%Y")
+        ])
+
+        st.success("Férias cadastradas")
+
+    except Exception as e:
+        st.error(str(e))

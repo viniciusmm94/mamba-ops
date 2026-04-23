@@ -1,20 +1,58 @@
 from datetime import datetime
 from services.pontomais import get_absences
+from services.sheets import get_data
 
 
-def normalizar_hora(valor):
-    if not valor:
-        return ""
-
-    return str(valor).strip().replace("h", ":")
-
+# =========================
+# 🔹 CONFIG
+# =========================
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
 NOMES_EXCLUIDOS = {
-    'Anthony Chub Generoso',
-    'Ariane de Queiroz Proença Fernandes',
-    # (mantém sua lista completa aqui)
+'Anthony Chub Generoso',
+'Ariane de Queiroz Proença Fernandes',
+'Arlindo Goes da Silva',
+'Beatriz Pereira Macia',
+'Bianca Oliveira Nôsa',
+'Carolina Mendes Fonseca',
+'Cristina Aparecida da Anunciação dos Santos Lima',
+'Débora Cristina Soares de Oliveira',
+'Gabriel Batista do Carmo Paiva',
+'Gabriel Ribeiro Dos Santos',
+'Gabriel Silva Soares',
+'Giovana da Silva Ribeiro',
+'Guilherme de Carvalho Rocha',
+'Jeniffer Lima Dias da Silva',
+'João Victor Gomes Dos Santos',
+'Lais Gabrielle Dias',
+'Laura Costa de Almeida',
+'Lucas Freire Rodrigues Croce Pereira',
+'Luísa Andrade Martins Moniz Teixeira',
+'Matheus Honorato Daniel',
+'Pedro Henrique Araujo Doconski',
+'Rafael Neves Rodrigues',
+'Roger Ferreira Gomes',
+'Vitor Leite Rodrigues Lopes',
+'Vitória Carvalho Santana',
+'Wellington Dantas Moreira',
+'Leonardo Roversi Coelho',
+'Lygia Ferreira da Silva',
+'Graziele Rocha Vasconcelos',
+'Kaique Monteiro dos Santos',
+'Peterson Evangelista Tourinho',
+'Francielly Ferreira Motta dos Santos',
+'Vinícius Vieira Cavalcante',
+'Cybele Dias Dos Santos Freire',
+'Caue Paiva Lucena Paiva Lucena',
+'Adriano Souza de Castro',
+'Beatriz Cristina Paulo Ferraz Maul Lins',
+'Marco Aurelio Aragoni Pedroza',
+'Kaique Monteiro dos Reis',
+'Kaua Nascimento da Cruz',
+'Matheus Ferreira Alves',
+'Marcos Vinicius Santos Silva',
+'Nathaly Pires Lima',
 }
 
 EXCECOES_ATRASO = {
@@ -25,11 +63,66 @@ EXCECOES_ATRASO = {
 }
 
 
+# =========================
+# 🔹 UTILS
+# =========================
+
+def normalizar_hora(valor):
+    if not valor:
+        return ""
+    return str(valor).strip().replace("h", ":")
+
+
 def is_excluido(nome):
     return nome.strip() in NOMES_EXCLUIDOS
 
 
-# 🔥 NOVA FUNÇÃO
+# =========================
+# 🔹 FÉRIAS MANUAL (SHEETS)
+# =========================
+
+def get_ferias_manual():
+    rows = get_data("Ferias Manual")
+
+    result = []
+
+    for r in rows[1:]:
+        if len(r) < 3:
+            continue
+
+        result.append({
+            "nome": r[0],
+            "inicio": r[1],
+            "fim": r[2]
+        })
+
+    return result
+
+
+def esta_em_ferias_manual(nome, data_ponto, ferias_manual):
+
+    data_ref = datetime.strptime(data_ponto, "%d/%m/%Y")
+
+    for f in ferias_manual:
+        if nome != f["nome"]:
+            continue
+
+        try:
+            inicio = datetime.strptime(f["inicio"], "%d/%m/%Y")
+            fim = datetime.strptime(f["fim"], "%d/%m/%Y")
+        except:
+            continue
+
+        if inicio <= data_ref <= fim:
+            return True
+
+    return False
+
+
+# =========================
+# 🔹 ABSENCES (API)
+# =========================
+
 def esta_em_ausencia(absences, data_ponto):
 
     data_ref = datetime.strptime(data_ponto, "%d/%m/%Y")
@@ -47,6 +140,10 @@ def esta_em_ausencia(absences, data_ponto):
     return None
 
 
+# =========================
+# 🔹 FUNÇÃO PRINCIPAL
+# =========================
+
 def registrar_controle_diario(dados_resumo, colaboradores):
 
     colaboradores_map = {}
@@ -62,6 +159,10 @@ def registrar_controle_diario(dados_resumo, colaboradores):
 
         colaboradores_map[nome] = lider
         id_map[nome] = emp_id
+
+    # =========================
+    # RESUMO DO DIA
+    # =========================
 
     quem_bateu = {}
     data_ponto = None
@@ -87,7 +188,7 @@ def registrar_controle_diario(dados_resumo, colaboradores):
 
     resultado = []
 
-    # 🔥 CACHE (evita múltiplas chamadas)
+    # 🔥 CACHE
     absences_cache = {}
 
     def get_absences_cached(emp_id):
@@ -97,6 +198,9 @@ def registrar_controle_diario(dados_resumo, colaboradores):
         data = get_absences(emp_id)
         absences_cache[emp_id] = data
         return data
+
+    # 🔥 CARREGA FÉRIAS MANUAL
+    ferias_manual = get_ferias_manual()
 
     # =========================
     # ATRASADOS
@@ -120,7 +224,7 @@ def registrar_controle_diario(dados_resumo, colaboradores):
             })
 
     # =========================
-    # AUSENTES + ABSENCES
+    # AUSENTES + INTELIGÊNCIA
     # =========================
 
     for nome, lider in colaboradores_map.items():
@@ -133,12 +237,18 @@ def registrar_controle_diario(dados_resumo, colaboradores):
             emp_id = id_map.get(nome)
             status_final = "Ausente"
 
+            # 🔹 PRIORIDADE 1 → API
             if emp_id:
                 absences = get_absences_cached(emp_id)
                 status_ausencia = esta_em_ausencia(absences, data_ponto)
 
                 if status_ausencia:
                     status_final = status_ausencia
+
+            # 🔹 PRIORIDADE 2 → SHEETS
+            if status_final == "Ausente":
+                if esta_em_ferias_manual(nome, data_ponto, ferias_manual):
+                    status_final = "Férias"
 
             resultado.append({
                 "Data": data_ponto,
