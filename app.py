@@ -24,12 +24,12 @@ if st.button("Atualizar Colaboradores"):
             st.success(f"{len(df)} colaboradores carregados")
             st.dataframe(df, width="stretch", height=800)
 
-            # opcional: salvar no sheets
             salvar_no_sheets(dados)
+
             st.success("Dados enviados para o Google Sheets")
 
         except Exception as e:
-            st.error(f"Erro ao buscar colaboradores: {str(e)}")
+            st.error(str(e))
 
 
 # ==============================
@@ -46,22 +46,16 @@ if st.button("Buscar Ponto"):
     with st.spinner("Buscando dados de ponto..."):
         try:
             dados = resumo_ponto_por_data(data)
-
-            if not dados:
-                st.warning("Nenhum dado retornado para essa data")
-                st.stop()
-
             df = pd.DataFrame(dados)
 
-            st.success(f"{len(df)} registros encontrados")
             st.dataframe(df, width="stretch")
 
-            # opcional: salvar no sheets
             salvar_no_sheets(dados)
+
             st.success("Ponto enviado para o Google Sheets")
 
         except Exception as e:
-            st.error(f"Erro ao buscar ponto: {str(e)}")
+            st.error(str(e))
 
 
 # ==============================
@@ -74,23 +68,10 @@ if st.button("Gerar Controle"):
 
     with st.spinner("Processando controle..."):
         try:
-            # 🔥 independente
             colaboradores = listar_colaboradores_ativos()
             dados = resumo_ponto_por_data(data)
 
-            if not colaboradores:
-                st.error("Erro ao carregar colaboradores")
-                st.stop()
-
-            if not dados:
-                st.error("Nenhum dado de ponto encontrado para a data")
-                st.stop()
-
             resultado = registrar_controle_diario(dados, colaboradores)
-
-            if not resultado:
-                st.warning("Nenhum resultado gerado (sem atrasos/ausências)")
-                st.stop()
 
             df = pd.DataFrame(resultado)
 
@@ -98,4 +79,4 @@ if st.button("Gerar Controle"):
             st.dataframe(df, width="stretch")
 
         except Exception as e:
-            st.error(f"Erro ao gerar controle: {str(e)}")
+            st.error(str(e))
