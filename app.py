@@ -67,6 +67,7 @@ tabs = st.tabs([
     "Controle",
     "Ponto",
     "Férias",
+    "Banco de Horas",
     "Colaboradores"
 ])
 
@@ -74,7 +75,7 @@ tabs = st.tabs([
 # 🔹 TAB 1 — COLABORADORES
 # ==============================
 
-with tabs[3]:
+with tabs[4]:
     st.subheader("Colaboradores")
 
     if st.button("Atualizar Colaboradores"):
@@ -296,5 +297,23 @@ with tabs[2]:
                     st.success("Atualizado")
                     st.rerun()
 
-                except:
+                except Exception:
                     st.error("Erro ao editar")
+
+
+with tabs[3]:
+    st.subheader("Banco de Horas")
+
+    if st.button("Gerar Banco de Horas", key="btn_banco_horas"):
+        try:
+            from services.banco_horas import gerar_banco_horas
+
+            with st.spinner("Gerando banco de horas..."):
+                token = st.secrets["PONTOMAIS_TOKEN"]
+                dados = gerar_banco_horas(token)
+
+            df = pd.DataFrame(dados)
+            st.dataframe(df, use_container_width=True)
+
+        except Exception as e:
+            st.error(str(e))
