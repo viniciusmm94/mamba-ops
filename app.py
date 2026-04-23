@@ -255,8 +255,8 @@ with tabs[2]:
                     st.success("Férias cadastradas")
                     st.rerun()
 
-                except:
-                    st.error("Erro ao cadastrar")
+                except Exception as e:
+                    st.error(f"Erro ao cadastrar: {e}")
 
     # 🔹 EDITAR
     with col2:
@@ -313,7 +313,7 @@ with tabs[3]:
                 dados = gerar_banco_horas(token)
 
             df = pd.DataFrame(dados)
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, height=600)
 
         except Exception as e:
-            st.error(str(e))
+            st.error(f"Erro ao gerar banco de horas: {e}")
