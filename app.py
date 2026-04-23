@@ -202,6 +202,7 @@ with tabs[2]:
                 padding: 4px 12px;
                 border-radius: 4px;
                 color: #333;
+                margin-bottom: -18px;
                 font-size: 11px;
             ">
                 Nenhum registro encontrado
