@@ -37,7 +37,7 @@ st.markdown(
         margin-top:-12px;
         color: #9ca3af;
         font-size:14px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     ">
         Controle diário de ponto, ausências e férias
     </div>
