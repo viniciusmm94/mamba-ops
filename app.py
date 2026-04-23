@@ -113,61 +113,61 @@ with tabs[2]:
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
-# ==============================
-# 🔹 VISUALIZAR FÉRIAS
-# ==============================
+    # ==============================
+    # 🔹 VISUALIZAR FÉRIAS
+    # ==============================
 
-st.markdown("### Férias atuais")
+    st.markdown("### Férias atuais")
 
-with st.spinner("Carregando dados..."):
-    absences = get_absences(emp["ID"])
+    with st.spinner("Carregando dados..."):
+        absences = get_absences(emp["ID"])
 
-if absences:
-    df_abs = pd.DataFrame(absences)
+        if absences:
+            df_abs = pd.DataFrame(absences)
 
-    colunas_desejadas = [
-        "id",
-        "start_date",
-        "end_date",
-        "observation",
-        "total_days"
-    ]
+            colunas_desejadas = [
+                "id",
+                "start_date",
+                "end_date",
+                "observation",
+                "total_days"
+            ]
 
-    df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
+            df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
 
-    df_abs = df_abs.rename(columns={
-        "id": "ID",
-        "start_date": "Início",
-        "end_date": "Fim",
-        "observation": "Tipo",
-        "total_days": "Dias"
-    })
+            df_abs = df_abs.rename(columns={
+                "id": "ID",
+                "start_date": "Início",
+                "end_date": "Fim",
+                "observation": "Tipo",
+                "total_days": "Dias"
+            })
 
-    st.dataframe(df_abs, use_container_width=True)
+            st.dataframe(df_abs, use_container_width=True)
 
-else:
-    st.markdown(
-        """
-        <div style="
-            background-color: rgb(197, 180, 96);
-            border: 1px solid rgba(0,0,0,0.1);
-            padding: 8px 12px;
-            border-radius: 6px;
-            color: #333;
-            font-size: 13px;
-            margin-top: -8px;
-            margin-bottom: 8px;
-        ">
-            Nenhuma ausência encontrada
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        else:
+            st.markdown(
+                """
+                <div style="
+                    background-color: rgb(197, 180, 96);
+                    border: 1px solid rgba(0,0,0,0.1);
+                    padding: 6px 12px;
+                    border-radius: 5px;
+                    color: #333;
+                    font-size: 11px;
+                    margin-top: -6px;
+                    margin-bottom: 6px;
+                ">
+                    Nenhum registro encontrado
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
 
-# 🔥 FORA DO IF/ELSE
-st.divider()
+            st.divider()
 
-col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
 
             # ==============================
             # 🔹 CADASTRAR
