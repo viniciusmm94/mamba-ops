@@ -141,7 +141,7 @@ with tabs[2]:
     colaboradores = get_colaboradores()
     nomes = [c["Nome"] for c in colaboradores]
 
-    # 🔹 SELECT (já com largura controlada via CSS global)
+    # 🔹 SELECT
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
@@ -151,129 +151,128 @@ with tabs[2]:
 
     st.markdown("### Férias atuais")
 
+    # 🔥 SOMENTE LOADING
     with st.spinner("Carregando dados..."):
         absences = get_absences(emp["ID"])
 
-        if absences:
-            df_abs = pd.DataFrame(absences)
+    # 🔥 UI FORA DO SPINNER
+    if absences:
+        df_abs = pd.DataFrame(absences)
 
-            colunas_desejadas = [
-                "id",
-                "start_date",
-                "end_date",
-                "observation",
-                "total_days"
-            ]
+        colunas_desejadas = [
+            "id",
+            "start_date",
+            "end_date",
+            "observation",
+            "total_days"
+        ]
 
-            df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
+        df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
 
-            df_abs = df_abs.rename(columns={
-                "id": "ID",
-                "start_date": "Início",
-                "end_date": "Fim",
-                "observation": "Tipo",
-                "total_days": "Dias"
-            })
+        df_abs = df_abs.rename(columns={
+            "id": "ID",
+            "start_date": "Início",
+            "end_date": "Fim",
+            "observation": "Tipo",
+            "total_days": "Dias"
+        })
 
-            st.dataframe(df_abs, use_container_width=True)
+        # 🔹 tabela mais alinhada (sem ocupar tudo)
+        st.dataframe(df_abs)
 
-        else:
-            st.markdown(
-                """
-                <div style="
-                    max-width: 400px;
-                    margin: 4px 0;
-                    background-color: rgb(197, 180, 96);
-                    border: 1px solid rgba(0,0,0,0.1);
-                    padding: 4px 12px;
-                    border-radius: 4px;
-                    color: #333;
-                    font-size: 11px;
-                    margin-top: -14px;
-                    margin-bottom: 4px;
-                ">
-                    Nenhum registro encontrado
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
+    else:
+        # 🔹 box compacto
+        st.markdown(
+            """
+            <div style="
+                max-width: 400px;
+                margin: 4px 0;
+                background-color: rgb(197, 180, 96);
+                border: 1px solid rgba(0,0,0,0.1);
+                padding: 4px 12px;
+                border-radius: 4px;
+                color: #333;
+                font-size: 11px;
+            ">
+                Nenhum registro encontrado
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-            st.divider()
+    # ==============================
+    # 🔹 FORMULÁRIOS
+    # ==============================
 
-            col1, col2 = st.columns(2)
+    st.divider()
 
-            # ==============================
-            # 🔹 CADASTRAR
-            # ==============================
+    col1, col2 = st.columns(2)
 
-            with col1:
-                st.markdown("### Cadastrar Férias")
+    # 🔹 CADASTRAR
+    with col1:
+        st.markdown("### Cadastrar Férias")
 
-                with st.form("form_create"):
-                    inicio = st.date_input("Data início", key="create_inicio")
-                    fim = st.date_input("Data fim", key="create_fim")
+        with st.form("form_create"):
+            inicio = st.date_input("Data início", key="create_inicio")
+            fim = st.date_input("Data fim", key="create_fim")
 
-                    if st.form_submit_button("Cadastrar"):
-                        try:
-                            if inicio > fim:
-                                st.warning("Data inválida")
-                                st.stop()
+            if st.form_submit_button("Cadastrar"):
+                try:
+                    if inicio > fim:
+                        st.warning("Data inválida")
+                        st.stop()
 
-                            with st.spinner("Cadastrando..."):
-                                criar_ferias(
-                                    emp["ID"],
-                                    inicio.strftime("%d/%m/%Y"),
-                                    fim.strftime("%d/%m/%Y")
-                                )
+                    with st.spinner("Cadastrando..."):
+                        criar_ferias(
+                            emp["ID"],
+                            inicio.strftime("%d/%m/%Y"),
+                            fim.strftime("%d/%m/%Y")
+                        )
 
-                            st.success("Férias cadastradas")
-                            st.rerun()
+                    st.success("Férias cadastradas")
+                    st.rerun()
 
-                        except:
-                            st.error("Erro ao cadastrar")
+                except:
+                    st.error("Erro ao cadastrar")
 
-            # ==============================
-            # 🔹 EDITAR
-            # ==============================
+    # 🔹 EDITAR
+    with col2:
+        st.markdown("### Editar Férias")
 
-            with col2:
-                st.markdown("### Editar Férias")
+        with st.form("form_edit"):
+            inicio_edit = st.date_input("Novo início", key="edit_inicio")
+            fim_edit = st.date_input("Novo fim", key="edit_fim")
 
-                with st.form("form_edit"):
-                    inicio_edit = st.date_input("Novo início", key="edit_inicio")
-                    fim_edit = st.date_input("Novo fim", key="edit_fim")
+            if st.form_submit_button("Salvar"):
+                try:
+                    if inicio_edit > fim_edit:
+                        st.warning("Data inválida")
+                        st.stop()
 
-                    if st.form_submit_button("Salvar"):
-                        try:
-                            if inicio_edit > fim_edit:
-                                st.warning("Data inválida")
-                                st.stop()
+                    inicio_str = inicio_edit.strftime("%d/%m/%Y")
+                    fim_str = fim_edit.strftime("%d/%m/%Y")
 
-                            inicio_str = inicio_edit.strftime("%d/%m/%Y")
-                            fim_str = fim_edit.strftime("%d/%m/%Y")
+                    ausencia = encontrar_ausencia_por_periodo(
+                        absences,
+                        inicio_str,
+                        fim_str
+                    )
 
-                            ausencia = encontrar_ausencia_por_periodo(
-                                absences,
-                                inicio_str,
-                                fim_str
-                            )
+                    if not ausencia:
+                        st.error("Não encontrada")
+                        st.stop()
 
-                            if not ausencia:
-                                st.error("Não encontrada")
-                                st.stop()
+                    with st.spinner("Atualizando..."):
+                        editar_ausencia(
+                            emp["ID"],
+                            ausencia["id"],
+                            inicio_str,
+                            fim_str,
+                            "ferias"
+                        )
 
-                            with st.spinner("Atualizando..."):
-                                editar_ausencia(
-                                    emp["ID"],
-                                    ausencia["id"],
-                                    inicio_str,
-                                    fim_str,
-                                    "ferias"
-                                )
+                    st.success("Atualizado")
+                    st.rerun()
 
-                            st.success("Atualizado")
-                            st.rerun()
-
-                        except:
-                            st.error("Erro ao editar")
+                except:
+                    st.error("Erro ao editar")
