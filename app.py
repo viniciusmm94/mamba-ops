@@ -133,3 +133,45 @@ if st.button("Cadastrar Férias"):
 
     except Exception as e:
         st.error(str(e))
+
+        st.subheader("Editar Férias")
+
+colaboradores = listar_colaboradores_ativos()
+nomes = [c["Nome"] for c in colaboradores]
+
+nome_sel = st.selectbox("Selecionar colaborador", nomes, key="edit_nome")
+
+inicio_edit = st.date_input("Novo início", key="edit_inicio")
+fim_edit = st.date_input("Novo fim", key="edit_fim")
+
+if st.button("Salvar Alteração"):
+
+    try:
+        from services.pontomais import get_absences, editar_ausencia
+        from services.controle import encontrar_ausencia_por_periodo
+
+        emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
+
+        inicio_str = inicio_edit.strftime("%d/%m/%Y")
+        fim_str = fim_edit.strftime("%d/%m/%Y")
+
+        absences = get_absences(emp["ID"])
+
+        ausencia = encontrar_ausencia_por_periodo(absences, inicio_str, fim_str)
+
+        if not ausencia:
+            st.error("Nenhuma ausência encontrada nesse período")
+            st.stop()
+
+        editar_ausencia(
+            employee_id=emp["ID"],
+            absence_id=ausencia["id"],
+            inicio=inicio_str,
+            fim=fim_str,
+            tipo="ferias"
+        )
+
+        st.success("Férias atualizadas com sucesso")
+
+    except Exception as e:
+        st.error(str(e))
