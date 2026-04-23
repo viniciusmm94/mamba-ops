@@ -65,15 +65,17 @@ if "tab_index" not in st.session_state:
 # 🔹 TABS PRINCIPAIS
 # ==============================
 
-tab_labels = ["Controle", "Ponto", "Férias", "Colaboradores"]
-
-tabs = st.tabs(tab_labels)
+tab = st.radio(
+    "",
+    ["Controle", "Ponto", "Férias", "Colaboradores"],
+    horizontal=True
+)
 
 # ==============================
 # 🔹 TAB 1 — COLABORADORES
 # ==============================
 
-with tabs[3]:
+if tab == "Colaboradores":
     st.session_state.tab_index = 3
     st.subheader("Colaboradores")
 
@@ -97,7 +99,7 @@ with tabs[3]:
 # 🔹 TAB 2 — PONTO
 # ==============================
 
-with tabs[1]:
+if tab == "Ponto":
     st.session_state.tab_index = 1
     st.subheader("Resumo de Ponto")
 
@@ -124,7 +126,7 @@ with tabs[1]:
 # 🔹 TAB 3 — CONTROLE
 # ==============================
 
-with tabs[0]:
+if tab == "Controle":
     st.session_state.tab_index = 0
     st.subheader("Controle Diário")
 
@@ -152,7 +154,7 @@ if st.button("Gerar Controle"):
 # 🔹 TAB 4 — FÉRIAS
 # ==============================
 
-with tabs[2]:
+if tab == "Férias":
     st.session_state.tab_index = 2
     st.subheader("Gestão de Férias")
 
