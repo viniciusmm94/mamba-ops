@@ -21,7 +21,7 @@ st.markdown(
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
         font-size: 40px;
-        color: #7c3aed;
+        color: #333;
         margin-bottom: 0;
     ">
         Gestão de Jornada
