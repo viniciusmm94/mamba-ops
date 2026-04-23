@@ -10,7 +10,7 @@ st.title("Gestão de Jornada")
 
 st.markdown(
     """
-    <div style="margin-top:-12px; color: #9ca3af; font-size:14px;">
+    <div style="margin-top:-20px; color: #9ca3af; font-size:14px;">
         Controle diário de ponto, ausências e férias
     </div>
     """,
