@@ -5,6 +5,9 @@ import streamlit as st
 BASE_URL = "https://api.pontomais.com.br/external_api/v1"
 
 
+# =========================
+# 🔹 COLABORADORES
+# =========================
 def listar_colaboradores_ativos():
     TOKEN = st.secrets["PONTOMAIS_TOKEN"]
 
@@ -68,14 +71,14 @@ def listar_colaboradores_ativos():
     return linhas
 
 
+# =========================
+# 🔹 RESUMO DE PONTO
+# =========================
 def resumo_ponto_por_data(data_br):
-    import requests
     import csv
     from io import StringIO
     from collections import defaultdict
-    import streamlit as st
 
-    BASE_URL = "https://api.pontomais.com.br/external_api/v1"
     TOKEN = st.secrets["PONTOMAIS_TOKEN"]
 
     try:
@@ -131,7 +134,7 @@ def resumo_ponto_por_data(data_br):
         try:
             hh, mm = map(int, h.split(":"))
             return hh * 60 + mm
-        except Exception:
+        except:
             return None
 
     def to_hhmm(m):
@@ -172,6 +175,7 @@ def resumo_ponto_por_data(data_br):
         if tS1 is not None and tE2 is not None:
             inter = tE2 - tS1
             intervalo = to_hhmm(inter)
+
             if inter < 60:
                 status_intervalo = "Intervalo Irregular"
 
@@ -191,3 +195,26 @@ def resumo_ponto_por_data(data_br):
         })
 
     return output
+
+
+# =========================
+# 🔹 AUSÊNCIAS (FÉRIAS / AFASTAMENTO)
+# =========================
+def get_absences(employee_id):
+    TOKEN = st.secrets["PONTOMAIS_TOKEN"]
+
+    url = f"{BASE_URL}/employees/{employee_id}/absences?per_page=10"
+
+    response = requests.get(
+        url,
+        headers={
+            "access-token": TOKEN,
+            "Content-Type": "application/json"
+        }
+    )
+
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+    return data.get("absences", [])

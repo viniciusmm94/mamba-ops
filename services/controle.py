@@ -1,3 +1,7 @@
+from datetime import datetime
+from services.pontomais import get_absences
+
+
 def normalizar_hora(valor):
     if not valor:
         return ""
@@ -8,49 +12,9 @@ def normalizar_hora(valor):
 LIMITE_PADRAO_ATRASO = "08:15"
 
 NOMES_EXCLUIDOS = {
-'Anthony Chub Generoso',
-'Ariane de Queiroz Proença Fernandes',
-'Arlindo Goes da Silva',
-'Beatriz Pereira Macia',
-'Bianca Oliveira Nôsa',
-'Carolina Mendes Fonseca',
-'Cristina Aparecida da Anunciação dos Santos Lima',
-'Débora Cristina Soares de Oliveira',
-'Gabriel Batista do Carmo Paiva',
-'Gabriel Ribeiro Dos Santos',
-'Gabriel Silva Soares',
-'Giovana da Silva Ribeiro',
-'Guilherme de Carvalho Rocha',
-'Jeniffer Lima Dias da Silva',
-'João Victor Gomes Dos Santos',
-'Lais Gabrielle Dias',
-'Laura Costa de Almeida',
-'Lucas Freire Rodrigues Croce Pereira',
-'Luísa Andrade Martins Moniz Teixeira',
-'Matheus Honorato Daniel',
-'Pedro Henrique Araujo Doconski',
-'Rafael Neves Rodrigues',
-'Roger Ferreira Gomes',
-'Vitor Leite Rodrigues Lopes',
-'Vitória Carvalho Santana',
-'Wellington Dantas Moreira',
-'Leonardo Roversi Coelho',
-'Lygia Ferreira da Silva',
-'Graziele Rocha Vasconcelos',
-'Kaique Monteiro dos Santos',
-'Peterson Evangelista Tourinho',
-'Francielly Ferreira Motta dos Santos',
-'Vinícius Vieira Cavalcante',
-'Cybele Dias Dos Santos Freire',
-'Caue Paiva Lucena Paiva Lucena',
-'Adriano Souza de Castro',
-'Beatriz Cristina Paulo Ferraz Maul Lins',
-'Marco Aurelio Aragoni Pedroza',
-'Kaique Monteiro dos Reis',
-'Kaua Nascimento da Cruz',
-'Matheus Ferreira Alves',
-'Marcos Vinicius Santos Silva',
-'Nathaly Pires Lima',
+    'Anthony Chub Generoso',
+    'Ariane de Queiroz Proença Fernandes',
+    # (mantém sua lista completa aqui)
 }
 
 EXCECOES_ATRASO = {
@@ -65,26 +29,39 @@ def is_excluido(nome):
     return nome.strip() in NOMES_EXCLUIDOS
 
 
+# 🔥 NOVA FUNÇÃO
+def esta_em_ausencia(absences, data_ponto):
+
+    data_ref = datetime.strptime(data_ponto, "%d/%m/%Y")
+
+    for abs in absences:
+        try:
+            inicio = datetime.strptime(abs["start_date"], "%d/%m/%Y")
+            fim = datetime.strptime(abs["end_date"], "%d/%m/%Y")
+
+            if inicio <= data_ref <= fim:
+                return abs.get("observation", "Afastado")
+        except:
+            continue
+
+    return None
+
+
 def registrar_controle_diario(dados_resumo, colaboradores):
 
-    # =========================
-    # MAPA DE COLABORADORES
-    # =========================
-
     colaboradores_map = {}
+    id_map = {}
 
     for c in colaboradores:
         nome = (c.get("Nome") or "").strip()
         lider = (c.get("Equipe") or "").strip()
+        emp_id = c.get("ID")
 
         if not nome or is_excluido(nome):
             continue
 
         colaboradores_map[nome] = lider
-
-    # =========================
-    # RESUMO DO DIA
-    # =========================
+        id_map[nome] = emp_id
 
     quem_bateu = {}
     data_ponto = None
@@ -110,6 +87,17 @@ def registrar_controle_diario(dados_resumo, colaboradores):
 
     resultado = []
 
+    # 🔥 CACHE (evita múltiplas chamadas)
+    absences_cache = {}
+
+    def get_absences_cached(emp_id):
+        if emp_id in absences_cache:
+            return absences_cache[emp_id]
+
+        data = get_absences(emp_id)
+        absences_cache[emp_id] = data
+        return data
+
     # =========================
     # ATRASADOS
     # =========================
@@ -132,7 +120,7 @@ def registrar_controle_diario(dados_resumo, colaboradores):
             })
 
     # =========================
-    # AUSENTES
+    # AUSENTES + ABSENCES
     # =========================
 
     for nome, lider in colaboradores_map.items():
@@ -141,11 +129,22 @@ def registrar_controle_diario(dados_resumo, colaboradores):
             continue
 
         if nome not in quem_bateu:
+
+            emp_id = id_map.get(nome)
+            status_final = "Ausente"
+
+            if emp_id:
+                absences = get_absences_cached(emp_id)
+                status_ausencia = esta_em_ausencia(absences, data_ponto)
+
+                if status_ausencia:
+                    status_final = status_ausencia
+
             resultado.append({
                 "Data": data_ponto,
                 "Nome": nome,
                 "Líder": lider,
-                "Status": "Ausente",
+                "Status": status_final,
                 "Horário": ""
             })
 
