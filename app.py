@@ -9,6 +9,16 @@ st.set_page_config(layout="wide")
 st.markdown(
     """
     <style>
+    .block-container {
+        padding-top: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <style>
     div[data-testid="stSelectbox"] {
         max-width: 400px;
     }
