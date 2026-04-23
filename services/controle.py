@@ -4,6 +4,8 @@ def normalizar_hora(valor):
 
     return str(valor).strip().replace("h", ":")
 
+def is_excluido(nome):
+    return nome.strip() in NOMES_EXCLUIDOS
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
@@ -74,6 +76,8 @@ def registrar_controle_diario(dados_resumo, colaboradores):
         hora = normalizar_hora(hora_raw)
         limite = EXCECOES_ATRASO.get(nome, LIMITE_PADRAO_ATRASO)
 
+
+
         if hora > limite:
             resultado.append({
                 "Data": data_ponto,
@@ -87,15 +91,18 @@ def registrar_controle_diario(dados_resumo, colaboradores):
     # AUSENTES
     # =========================
 
-    for nome, lider in colaboradores_map.items():
+for nome, lider in colaboradores_map.items():
 
-        if nome not in quem_bateu:
-            resultado.append({
-                "Data": data_ponto,
-                "Nome": nome,
-                "Líder": lider,
-                "Status": "Ausente",
-                "Horário": ""
-            })
+    if is_excluido(nome):
+        continue
+
+    if nome not in quem_bateu:
+        resultado.append({
+            "Data": data_ponto,
+            "Nome": nome,
+            "Líder": lider,
+            "Status": "Ausente",
+            "Horário": ""
+        })
 
     return resultado
