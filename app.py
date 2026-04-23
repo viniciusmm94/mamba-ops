@@ -180,6 +180,8 @@ with tabs[2]:
             st.markdown(
                 """
                 <div style="
+                    max-width: 500px;
+                    margin: 6px 0;
                     background-color: rgb(197, 180, 96);
                     border: 1px solid rgba(0,0,0,0.1);
                     padding: 6px 12px;
