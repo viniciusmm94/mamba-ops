@@ -101,77 +101,124 @@ with tabs[0]:
 with tabs[2]:
     st.subheader("Gestão de Férias")
 
-    colaboradores = listar_colaboradores_ativos()
+    from services.pontomais import get_absences, criar_ferias, editar_ausencia
+
+    # 🔥 CACHE (performance)
+    @st.cache_data
+    def get_colaboradores():
+        return listar_colaboradores_ativos()
+
+    colaboradores = get_colaboradores()
     nomes = [c["Nome"] for c in colaboradores]
+
+    nome_sel = st.selectbox("Selecionar colaborador", nomes)
+
+    emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
+
+    # ==============================
+    # 🔹 VISUALIZAR FÉRIAS ATUAIS
+    # ==============================
+
+    st.markdown("### Férias atuais")
+
+    with st.spinner("Carregando dados..."):
+        absences = get_absences(emp["ID"])
+
+    if absences:
+        df_abs = pd.DataFrame(absences)
+        st.dataframe(df_abs, use_container_width=True)
+    else:
+        st.info("Nenhuma ausência encontrada")
+
+    st.divider()
 
     col1, col2 = st.columns(2)
 
-    # 🔹 CADASTRAR FÉRIAS
+    # ==============================
+    # 🔹 FORM — CADASTRAR
+    # ==============================
+
     with col1:
         st.markdown("### Cadastrar Férias")
 
-        nome_create = st.selectbox("Colaborador", nomes, key="create_nome")
+        with st.form("form_create"):
+            inicio = st.date_input("Data início", key="create_inicio")
+            fim = st.date_input("Data fim", key="create_fim")
 
-        inicio_api = st.date_input("Início", key="api_inicio")
-        fim_api = st.date_input("Fim", key="api_fim")
+            submit_create = st.form_submit_button("Cadastrar")
 
-        if st.button("Cadastrar Férias"):
-            try:
-                from services.pontomais import criar_ferias
+            if submit_create:
+                try:
+                    # 🔥 validação
+                    if inicio > fim:
+                        st.warning("Data de início maior que fim")
+                        st.stop()
 
-                emp = next(c for c in colaboradores if c["Nome"] == nome_create)
+                    with st.spinner("Cadastrando férias..."):
+                        criar_ferias(
+                            employee_id=emp["ID"],
+                            inicio=inicio.strftime("%d/%m/%Y"),
+                            fim=fim.strftime("%d/%m/%Y")
+                        )
 
-                criar_ferias(
-                    employee_id=emp["ID"],
-                    inicio=inicio_api.strftime("%d/%m/%Y"),
-                    fim=fim_api.strftime("%d/%m/%Y")
-                )
+                    st.success(
+                        f"Férias cadastradas para {nome_sel} de "
+                        f"{inicio.strftime('%d/%m')} até {fim.strftime('%d/%m')}"
+                    )
 
-                st.success("Férias cadastradas com sucesso")
+                    st.rerun()
 
-            except Exception as e:
-                st.error(str(e))
+                except Exception as e:
+                    st.error("Erro ao cadastrar férias")
 
 
-    # 🔹 EDITAR FÉRIAS
+    # ==============================
+    # 🔹 FORM — EDITAR
+    # ==============================
+
     with col2:
         st.markdown("### Editar Férias")
 
-        nome_edit = st.selectbox("Colaborador", nomes, key="edit_nome")
+        with st.form("form_edit"):
+            inicio_edit = st.date_input("Novo início", key="edit_inicio")
+            fim_edit = st.date_input("Novo fim", key="edit_fim")
 
-        inicio_edit = st.date_input("Novo início", key="edit_inicio")
-        fim_edit = st.date_input("Novo fim", key="edit_fim")
+            submit_edit = st.form_submit_button("Salvar Alteração")
 
-        if st.button("Salvar Alteração"):
-            try:
-                from services.pontomais import get_absences, editar_ausencia
+            if submit_edit:
+                try:
+                    if inicio_edit > fim_edit:
+                        st.warning("Data de início maior que fim")
+                        st.stop()
 
-                emp = next(c for c in colaboradores if c["Nome"] == nome_edit)
+                    inicio_str = inicio_edit.strftime("%d/%m/%Y")
+                    fim_str = fim_edit.strftime("%d/%m/%Y")
 
-                inicio_str = inicio_edit.strftime("%d/%m/%Y")
-                fim_str = fim_edit.strftime("%d/%m/%Y")
+                    ausencia = encontrar_ausencia_por_periodo(
+                        absences,
+                        inicio_str,
+                        fim_str
+                    )
 
-                absences = get_absences(emp["ID"])
+                    if not ausencia:
+                        st.error("Nenhuma ausência encontrada nesse período")
+                        st.stop()
 
-                ausencia = encontrar_ausencia_por_periodo(
-                    absences,
-                    inicio_str,
-                    fim_str
-                )
+                    with st.spinner("Atualizando férias..."):
+                        editar_ausencia(
+                            employee_id=emp["ID"],
+                            absence_id=ausencia["id"],
+                            inicio=inicio_str,
+                            fim=fim_str,
+                            tipo="ferias"
+                        )
 
-                if not ausencia:
-                    st.error("Nenhuma ausência encontrada nesse período")
-                    st.stop()
+                    st.success(
+                        f"Férias atualizadas para {nome_sel} "
+                        f"({inicio_str} → {fim_str})"
+                    )
 
-                editar_ausencia(
-                    employee_id=emp["ID"],
-                    absence_id=ausencia["id"],
-                    inicio=inicio_str,
-                    fim=fim_str,
-                    tipo="ferias"
-                )
+                    st.rerun()
 
-                st.success("Férias atualizadas com sucesso")
-
-            except Exception as e:
-                st.error(str(e))
+                except Exception as e:
+                    st.error("Erro ao editar férias")
