@@ -1,7 +1,5 @@
 from datetime import datetime
 from services.pontomais import get_absences
-from services.sheets import get_data
-
 
 # =========================
 # 🔹 CONFIG
