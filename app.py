@@ -7,19 +7,7 @@ from services.controle import registrar_controle_diario, encontrar_ausencia_por_
 
 st.set_page_config(layout="wide")
 st.title("Gestão de Jornada")
-st.markdown(
-    """
-    <div style="
-        font-size: 32px;
-        font-weight: 700;
-        font-family: 'Inter', sans-serif;
-        color: #f9fafb;
-    ">
-        Gestão de Jornada
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+
 st.markdown(
     """
     <div style="margin-top:-28px; color: #9ca3af; font-size:14px;">
