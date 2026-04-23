@@ -25,6 +25,7 @@ if st.button("Atualizar Colaboradores"):
             st.dataframe(df, width="stretch", height=800)
 
             salvar_no_sheets(dados)
+
             st.success("Dados enviados para o Google Sheets")
 
         except Exception as e:
@@ -50,6 +51,7 @@ if st.button("Buscar Ponto"):
             st.dataframe(df, width="stretch")
 
             salvar_no_sheets(dados)
+
             st.success("Ponto enviado para o Google Sheets")
 
         except Exception as e:
@@ -66,7 +68,6 @@ if st.button("Gerar Controle"):
 
     with st.spinner("Processando controle..."):
         try:
-            # 🔥 TOTALMENTE INDEPENDENTE
             colaboradores = listar_colaboradores_ativos()
             dados = resumo_ponto_por_data(data)
 
