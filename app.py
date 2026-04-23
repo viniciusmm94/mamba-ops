@@ -20,7 +20,7 @@ st.markdown(
     <h1 style="
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
-        font-size: 32px;
+        font-size: 40px;
         color: #7c3aed;
         margin-bottom: 0;
     ">
