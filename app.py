@@ -6,6 +6,16 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
+st.markdown(
+    """
+    <style>
+    div[data-testid="stSelectbox"] {
+        max-width: 400px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # 🔥 importa a fonte Poppins
 st.markdown(
     """
