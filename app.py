@@ -139,7 +139,7 @@ if st.button("Gerar Controle"):
             resultado = registrar_controle_diario(dados, colaboradores)
             df = pd.DataFrame(resultado)
 
-        st.success(f"{len(df)} registros encontrados")
+        # 🔥 só mostra o resultado, sem mensagem fixa
         st.dataframe(df, use_container_width=True)
 
     except Exception as e:
