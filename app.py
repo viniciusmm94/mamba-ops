@@ -141,6 +141,7 @@ with tabs[2]:
     colaboradores = get_colaboradores()
     nomes = [c["Nome"] for c in colaboradores]
 
+    # 🔹 SELECT (já com largura controlada via CSS global)
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
