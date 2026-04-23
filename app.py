@@ -6,11 +6,39 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
-st.title("Gestão de Jornada")
 
+# 🔥 importa a fonte (necessário)
 st.markdown(
     """
-    <div style="margin-top:-28px; color: #9ca3af; font-size:14px;">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    """,
+    unsafe_allow_html=True
+)
+
+# 🔥 título customizado
+st.markdown(
+    """
+    <h1 style="
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 32px;
+        margin-bottom: 0;
+    ">
+        Gestão de Jornada
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+
+# 🔥 subtítulo ajustado
+st.markdown(
+    """
+    <div style="
+        margin-top:-12px;
+        color: #9ca3af;
+        font-size:14px;
+        font-family: 'Inter', sans-serif;
+    ">
         Controle diário de ponto, ausências e férias
     </div>
     """,
