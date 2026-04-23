@@ -65,18 +65,18 @@ if "tab_index" not in st.session_state:
 # 🔹 TABS PRINCIPAIS
 # ==============================
 
-tab = st.radio(
-    "",
-    ["Controle", "Ponto", "Férias", "Colaboradores"],
-    horizontal=True
-)
+tabs = st.tabs([
+    "Controle",
+    "Ponto",
+    "Férias",
+    "Colaboradores"
+])
 
 # ==============================
 # 🔹 TAB 1 — COLABORADORES
 # ==============================
 
-if tab == "Colaboradores":
-    st.session_state.tab_index = 3
+with tabs[3]:
     st.subheader("Colaboradores")
 
     if st.button("Atualizar Colaboradores"):
@@ -99,8 +99,7 @@ if tab == "Colaboradores":
 # 🔹 TAB 2 — PONTO
 # ==============================
 
-if tab == "Ponto":
-    st.session_state.tab_index = 1
+with tabs[1]:
     st.subheader("Resumo de Ponto")
 
     data_input = st.date_input("Selecione a data", key="ponto_data")
@@ -126,8 +125,7 @@ if tab == "Ponto":
 # 🔹 TAB 3 — CONTROLE
 # ==============================
 
-if tab == "Controle":
-    st.session_state.tab_index = 0
+with tabs[0]:
     st.subheader("Controle Diário")
 
     data_input_ctrl = st.date_input("Data para controle", key="controle_data")
@@ -154,8 +152,7 @@ if st.button("Gerar Controle"):
 # 🔹 TAB 4 — FÉRIAS
 # ==============================
 
-if tab == "Férias":
-    st.session_state.tab_index = 2
+with tabs[2]:
     st.subheader("Gestão de Férias")
 
     from services.pontomais import get_absences, criar_ferias, editar_ausencia
