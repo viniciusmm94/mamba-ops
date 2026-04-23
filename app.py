@@ -6,7 +6,29 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
-st.title("Gestão de Jornada")
+# 🔥 importa a fonte Poppins
+st.markdown(
+    """
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    """,
+    unsafe_allow_html=True
+)
+
+# 🔥 título customizado
+st.markdown(
+    """
+    <h1 style="
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 32px;
+        color: #7c3aed;
+        margin-bottom: 0;
+    ">
+        Gestão de Jornada
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown(
     """
