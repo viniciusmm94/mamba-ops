@@ -313,7 +313,7 @@ with tabs[3]:
                 dados = gerar_banco_horas(token)
 
             df = pd.DataFrame(dados)
-            st.dataframe(df, use_container_width=True, height=600)
+            st.dataframe(df, use_container_width=True, height=750)
 
         except Exception as e:
             st.error(f"Erro ao gerar banco de horas: {e}")
