@@ -15,15 +15,15 @@ st.title("Mamba Ops")
 tabs = st.tabs([
     "Ponto",
     "Controle",
-    "Colaboradores",
-    "Férias"
+    "Férias",
+    "Colaboradores"
 ])
 
 # ==============================
 # 🔹 TAB 1 — COLABORADORES
 # ==============================
 
-with tabs[0]:
+with tabs[3]:
     st.subheader("Colaboradores")
 
     if st.button("Atualizar Colaboradores"):
@@ -72,7 +72,7 @@ with tabs[1]:
 # 🔹 TAB 3 — CONTROLE
 # ==============================
 
-with tabs[2]:
+with tabs[0]:
     st.subheader("Controle Diário")
 
     data_input_ctrl = st.date_input("Data para controle", key="controle_data")
@@ -98,7 +98,7 @@ with tabs[2]:
 # 🔹 TAB 4 — FÉRIAS
 # ==============================
 
-with tabs[3]:
+with tabs[2]:
     st.subheader("Gestão de Férias")
 
     colaboradores = listar_colaboradores_ativos()
