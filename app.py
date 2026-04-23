@@ -13,9 +13,9 @@ st.title("Mamba Ops")
 # ==============================
 
 tabs = st.tabs([
-    "Colaboradores",
     "Ponto",
     "Controle",
+    "Colaboradores",
     "Férias"
 ])
 
