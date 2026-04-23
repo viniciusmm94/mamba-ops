@@ -76,49 +76,6 @@ def normalizar_hora(valor):
 def is_excluido(nome):
     return nome.strip() in NOMES_EXCLUIDOS
 
-
-# =========================
-# 🔹 FÉRIAS MANUAL (SHEETS)
-# =========================
-
-def get_ferias_manual():
-    rows = get_data("Ferias Manual")
-
-    result = []
-
-    for r in rows[1:]:
-        if len(r) < 3:
-            continue
-
-        result.append({
-            "nome": r[0],
-            "inicio": r[1],
-            "fim": r[2]
-        })
-
-    return result
-
-
-def esta_em_ferias_manual(nome, data_ponto, ferias_manual):
-
-    data_ref = datetime.strptime(data_ponto, "%d/%m/%Y")
-
-    for f in ferias_manual:
-        if nome != f["nome"]:
-            continue
-
-        try:
-            inicio = datetime.strptime(f["inicio"], "%d/%m/%Y")
-            fim = datetime.strptime(f["fim"], "%d/%m/%Y")
-        except:
-            continue
-
-        if inicio <= data_ref <= fim:
-            return True
-
-    return False
-
-
 # =========================
 # 🔹 ABSENCES (API)
 # =========================
@@ -199,9 +156,6 @@ def registrar_controle_diario(dados_resumo, colaboradores):
         absences_cache[emp_id] = data
         return data
 
-    # 🔥 CARREGA FÉRIAS MANUAL
-    ferias_manual = get_ferias_manual()
-
     # =========================
     # ATRASADOS
     # =========================
@@ -245,10 +199,6 @@ def registrar_controle_diario(dados_resumo, colaboradores):
                 if status_ausencia:
                     status_final = status_ausencia
 
-            # 🔹 PRIORIDADE 2 → SHEETS
-            if status_final == "Ausente":
-                if esta_em_ferias_manual(nome, data_ponto, ferias_manual):
-                    status_final = "Férias"
 
             resultado.append({
                 "Data": data_ponto,

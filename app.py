@@ -76,32 +76,6 @@ if st.button("Gerar Controle"):
 
 
 # ==============================
-# 🔹 BLOCO 4 — FÉRIAS MANUAL (SHEETS)
-# ==============================
-
-st.subheader("Cadastrar Férias Manual")
-
-nome = st.text_input("Nome completo")
-inicio_manual = st.date_input("Data início", key="manual_inicio")
-fim_manual = st.date_input("Data fim", key="manual_fim")
-
-if st.button("Salvar Férias Manual"):
-    try:
-        from services.sheets import append_row
-
-        append_row("Ferias Manual", [
-            nome,
-            inicio_manual.strftime("%d/%m/%Y"),
-            fim_manual.strftime("%d/%m/%Y")
-        ])
-
-        st.success("Férias cadastradas")
-
-    except Exception as e:
-        st.error(str(e))
-
-
-# ==============================
 # 🔹 BLOCO 5 — LANÇAR FÉRIAS (API)
 # ==============================
 
