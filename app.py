@@ -147,9 +147,22 @@ with tabs[2]:
 
         else:
             st.markdown(
-                "<div style='margin-top:-10px; color:gray;'>Nenhuma ausência encontrada</div>",
+                """
+                <div style="
+                    background-color: #262730;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    color: #ccc;
+                    font-size: 13px;
+                    margin-top: -8px;
+                    margin-bottom: 8px;
+                ">
+                    Nenhuma ausência encontrada
+                </div>
+                """,
                 unsafe_allow_html=True
             )
+        
 
             st.divider()
 
