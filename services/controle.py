@@ -96,6 +96,16 @@ for nome, lider in colaboradores_map.items():
     if is_excluido(nome):
         continue
 
+for nome, lider in colaboradores_map.items():
+
+    if is_excluido(nome):
+        continue
+
+for nome, lider in colaboradores_map.items():
+
+    if is_excluido(nome):
+        continue
+
     if nome not in quem_bateu:
         resultado.append({
             "Data": data_ponto,
