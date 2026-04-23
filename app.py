@@ -155,7 +155,7 @@ with tabs[2]:
                     color: #856404;
                     font-size: 11px;
                     margin-top: -6px;
-                    margin-bottom: 8px;
+                    margin-bottom: 6px;
                 ">
                     Nenhuma ausência encontrada
                 </div>
