@@ -6,7 +6,8 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
-st.title("Controle de Pontos")
+st.title("Gestão de Jornada")
+st.caption("Controle diário de ponto, ausências e férias")
 
 # ==============================
 # 🔹 TABS PRINCIPAIS
