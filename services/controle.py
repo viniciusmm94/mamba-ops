@@ -1,14 +1,9 @@
-def normalizar_hora(valor):
-    if not valor:
-        return ""
-
-    return str(valor).strip().replace("h", ":")
-
+from services.pontomais import get_status_colaborador
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
 NOMES_EXCLUIDOS = {
-    'Anthony Chub Generoso',
+'Anthony Chub Generoso',
 'Ariane de Queiroz Proença Fernandes',
 'Arlindo Goes da Silva',
 'Beatriz Pereira Macia',
@@ -49,6 +44,8 @@ NOMES_EXCLUIDOS = {
 'Kaique Monteiro dos Reis',
 'Kaua Nascimento da Cruz',
 'Matheus Ferreira Alves',
+'Marcos Vinicius Santos Silva',
+'Nathaly Pires Lima',
 }
 
 EXCECOES_ATRASO = {
@@ -58,64 +55,70 @@ EXCECOES_ATRASO = {
     'Alexandra Renata Gonçalves Barreto da Silva': '11:15'
 }
 
+STATUS_MAP = {
+    9: "Afastado",
+    11: "Férias"
+}
+
+
+def normalizar_hora(valor):
+    if not valor:
+        return ""
+    return str(valor).strip().replace("h", ":")
+
 
 def is_excluido(nome):
-    return nome.strip() in NOMES_EXCLUIDOS
+    return nome.strip().lower() in {n.lower() for n in NOMES_EXCLUIDOS}
 
 
 def registrar_controle_diario(dados_resumo, colaboradores):
 
-    # =========================
-    # MAPA DE COLABORADORES
-    # =========================
-
     colaboradores_map = {}
+    id_map = {}
 
     for c in colaboradores:
         nome = (c.get("Nome") or "").strip()
-        lider = (c.get("Equipe") or "").strip()
 
         if not nome or is_excluido(nome):
             continue
 
-        colaboradores_map[nome] = lider
-
-    # =========================
-    # RESUMO DO DIA
-    # =========================
+        colaboradores_map[nome] = c.get("Equipe")
+        id_map[nome] = c.get("ID")
 
     quem_bateu = {}
     data_ponto = None
 
     for d in dados_resumo:
         nome = (d.get("Nome") or "").strip()
+
+        if is_excluido(nome):
+            continue
+
         hora = d.get("Entrada 1")
         data_raw = d.get("Data")
 
         if not data_ponto and data_raw:
             data_ponto = data_raw
 
-        if not nome or not hora:
-            continue
-
-        if is_excluido(nome):
-            continue
-
-        quem_bateu[nome] = hora
+        if nome and hora:
+            quem_bateu[nome] = hora
 
     if not data_ponto:
         raise Exception("Data do ponto não encontrada")
 
     resultado = []
+    status_cache = {}
 
-    # =========================
+    def get_status_cached(emp_id):
+        if emp_id in status_cache:
+            return status_cache[emp_id]
+
+        status = get_status_colaborador(emp_id)
+        status_cache[emp_id] = status
+        return status
+
     # ATRASADOS
-    # =========================
-
     for nome, hora_raw in quem_bateu.items():
-
-        if is_excluido(nome):
-            continue
 
         hora = normalizar_hora(hora_raw)
         limite = EXCECOES_ATRASO.get(nome, LIMITE_PADRAO_ATRASO)
@@ -124,26 +127,26 @@ def registrar_controle_diario(dados_resumo, colaboradores):
             resultado.append({
                 "Data": data_ponto,
                 "Nome": nome,
-                "Líder": colaboradores_map.get(nome, ""),
+                "Líder": colaboradores_map.get(nome),
                 "Status": "Atrasado",
                 "Horário": hora
             })
 
-    # =========================
-    # AUSENTES
-    # =========================
-
+    # AUSENTES + STATUS REAL
     for nome, lider in colaboradores_map.items():
 
-        if is_excluido(nome):
-            continue
-
         if nome not in quem_bateu:
+
+            emp_id = id_map.get(nome)
+            status_api = get_status_cached(emp_id) if emp_id else None
+
+            status_final = STATUS_MAP.get(status_api, "Ausente")
+
             resultado.append({
                 "Data": data_ponto,
                 "Nome": nome,
                 "Líder": lider,
-                "Status": "Ausente",
+                "Status": status_final,
                 "Horário": ""
             })
 
