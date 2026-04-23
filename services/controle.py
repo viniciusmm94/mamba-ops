@@ -38,7 +38,17 @@ NOMES_EXCLUIDOS = {
 'Lygia Ferreira da Silva',
 'Graziele Rocha Vasconcelos',
 'Kaique Monteiro dos Santos',
-
+'Peterson Evangelista Tourinho',
+'Francielly Ferreira Motta dos Santos',
+'Vinícius Vieira Cavalcante',
+'Cybele Dias Dos Santos Freire',
+'Caue Paiva Lucena Paiva Lucena',
+'Adriano Souza de Castro',
+'Beatriz Cristina Paulo Ferraz Maul Lins',
+'Marco Aurelio Aragoni Pedroza',
+'Kaique Monteiro dos Reis',
+'Kaua Nascimento da Cruz',
+'Matheus Ferreira Alves',
 }
 
 EXCECOES_ATRASO = {
