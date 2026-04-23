@@ -6,12 +6,21 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
-st.title("Gestão de Jornada")
 
 st.markdown(
     """
-    <div style="margin-top:-28px; color: #9ca3af; font-size:14px;">
-        Controle diário de ponto, ausências e férias
+    <div style="
+        background: linear-gradient(135deg, #111827, #1f2937);
+        padding: 20px 24px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    ">
+        <div style="font-size: 26px; font-weight: 600; color: #f9fafb;">
+            Gestão de Jornada
+        </div>
+        <div style="margin-top:4px; color: #9ca3af; font-size:14px;">
+            Controle diário de ponto, ausências e férias
+        </div>
     </div>
     """,
     unsafe_allow_html=True
