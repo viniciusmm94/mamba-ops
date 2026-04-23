@@ -188,7 +188,7 @@ with tabs[2]:
                     border-radius: 4px;
                     color: #333;
                     font-size: 11px;
-                    margin-top: -16px;
+                    margin-top: -26px;
                     margin-bottom: 4px;
                 ">
                     Nenhum registro encontrado
