@@ -59,8 +59,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-if "tab_index" not in st.session_state:
-    st.session_state.tab_index = 0
 # ==============================
 # 🔹 TABS PRINCIPAIS
 # ==============================
