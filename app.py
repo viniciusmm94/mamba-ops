@@ -141,6 +141,9 @@ with tabs[2]:
     colaboradores = get_colaboradores()
     nomes = [c["Nome"] for c in colaboradores]
 
+    col = st.columns([2, 6])  # controla largura
+
+with col[0]:
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
