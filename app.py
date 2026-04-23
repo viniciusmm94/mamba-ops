@@ -189,7 +189,7 @@ with tabs[2]:
                     color: #333;
                     font-size: 11px;
                     margin-top: -16px;
-                    margin-bottom: 6px;
+                    margin-bottom: 4px;
                 ">
                     Nenhum registro encontrado
                 </div>
