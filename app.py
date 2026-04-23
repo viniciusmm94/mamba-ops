@@ -181,10 +181,10 @@ with tabs[2]:
                 """
                 <div style="
                     max-width: 400px;
-                    margin: 6px 0;
+                    margin: 4px 0;
                     background-color: rgb(197, 180, 96);
                     border: 1px solid rgba(0,0,0,0.1);
-                    padding: 6px 12px;
+                    padding: 4px 12px;
                     border-radius: 4px;
                     color: #333;
                     font-size: 11px;
