@@ -250,3 +250,45 @@ def criar_ferias(employee_id, inicio, fim):
         raise Exception(response.text)
 
     return response.json()
+
+def editar_ausencia(employee_id, absence_id, inicio, fim, tipo):
+
+    import requests
+    import streamlit as st
+
+    BASE_URL = "https://api.pontomais.com.br/external_api/v1"
+    TOKEN = st.secrets["PONTOMAIS_TOKEN"]
+
+    tipo_map = {
+        "afastamento": 1,
+        "ferias": 2
+    }
+
+    absence_type = tipo_map.get(tipo.lower())
+
+    if not absence_type:
+        raise Exception("Tipo inválido. Use 'afastamento' ou 'ferias'")
+
+    url = f"{BASE_URL}/employees/{employee_id}/absences/{absence_id}"
+
+    payload = {
+        "start_date": inicio,
+        "end_date": fim,
+        "observation": tipo.capitalize(),
+        "absence_type": absence_type,
+        "is_medical_certificate": False
+    }
+
+    response = requests.put(
+        url,
+        json=payload,
+        headers={
+            "access-token": TOKEN,
+            "Content-Type": "application/json"
+        }
+    )
+
+    if response.status_code not in [200, 201]:
+        raise Exception(response.text)
+
+    return response.json()
