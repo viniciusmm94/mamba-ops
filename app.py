@@ -6,9 +6,11 @@ from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario, encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
+st.title("Gestão de Jornada")
+
 st.markdown(
     """
-    <div style="margin-top:-10px; color: #9ca3af; font-size:14px;">
+    <div style="margin-top:-12px; color: #9ca3af; font-size:14px;">
         Controle diário de ponto, ausências e férias
     </div>
     """,
