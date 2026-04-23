@@ -69,10 +69,20 @@ def listar_colaboradores_ativos():
 
 
 def resumo_ponto_por_data(data_br):
+    import requests
+    import csv
+    from io import StringIO
+    from collections import defaultdict
+    import streamlit as st
+
+    BASE_URL = "https://api.pontomais.com.br/external_api/v1"
     TOKEN = st.secrets["PONTOMAIS_TOKEN"]
 
-    d, m, y = data_br.split("/")
-    data_iso = f"{y}-{m}-{d}"
+    try:
+        d, m, y = data_br.split("/")
+        data_iso = f"{y}-{m}-{d}"
+    except Exception:
+        raise Exception("Data inválida. Use DD/MM/AAAA")
 
     payload = {
         "report": {
@@ -95,10 +105,6 @@ def resumo_ponto_por_data(data_br):
     if response.status_code != 200:
         raise Exception(response.text)
 
-    import csv
-    from io import StringIO
-    from collections import defaultdict
-
     csv_data = list(csv.reader(StringIO(response.text)))
     by_employee = defaultdict(list)
 
@@ -106,28 +112,37 @@ def resumo_ponto_por_data(data_br):
         if i == 0:
             continue
 
-        nome = row[0].strip()
-        lider = row[1].strip()
-        hora = row[3].strip()
+        if not row or len(row) < 4:
+            continue
+
+        nome = (row[0] or "").strip()
+        lider = (row[1] or "").strip()
+        hora = (row[3] or "").strip()
 
         if not nome or not hora:
+            continue
+
+        if nome.lower() == "nome" or hora.lower() == "hora":
             continue
 
         by_employee[(nome, lider)].append(hora)
 
     def to_min(h):
-        h, m = map(int, h.split(":"))
-        return h * 60 + m
+        try:
+            hh, mm = map(int, h.split(":"))
+            return hh * 60 + mm
+        except Exception:
+            return None
 
     def to_hhmm(m):
-        if m <= 0:
+        if m is None or m <= 0:
             return "00:00"
         return f"{m//60:02}:{m%60:02}"
 
     output = []
 
     for (nome, lider), times in by_employee.items():
-        times.sort()
+        times = sorted(times)
 
         qtd = len(times)
         e1, s1, e2, s2 = (times + ["", "", "", ""])[:4]
@@ -145,16 +160,16 @@ def resumo_ponto_por_data(data_br):
         tE2 = to_min(e2) if e2 else None
         tS2 = to_min(s2) if s2 else None
 
-        if qtd == 2 and tE1 and tS1:
+        if qtd == 2 and tE1 is not None and tS1 is not None:
             horas = to_hhmm(tS1 - tE1)
 
-        if qtd == 3 and tE1 and tE2:
+        if qtd == 3 and tE1 is not None and tE2 is not None:
             horas = to_hhmm(tE2 - tE1)
 
-        if qtd >= 4 and tE1 and tS1 and tE2 and tS2:
+        if qtd >= 4 and all(v is not None for v in [tE1, tS1, tE2, tS2]):
             horas = to_hhmm((tS1 - tE1) + (tS2 - tE2))
 
-        if tS1 and tE2:
+        if tS1 is not None and tE2 is not None:
             inter = tE2 - tS1
             intervalo = to_hhmm(inter)
             if inter < 60:
