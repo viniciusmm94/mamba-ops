@@ -4,6 +4,7 @@ import pandas as pd
 from services.pontomais import listar_colaboradores_ativos, resumo_ponto_por_data
 from services.sheets import salvar_no_sheets
 from services.controle import registrar_controle_diario
+from services.controle import encontrar_ausencia_por_periodo
 
 st.set_page_config(layout="wide")
 st.title("Mamba Ops")
