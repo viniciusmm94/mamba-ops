@@ -21,9 +21,6 @@ if st.button("Atualizar Colaboradores"):
             dados = listar_colaboradores_ativos()
             df = pd.DataFrame(dados)
 
-            # 🔥 salva no estado
-            st.session_state["colaboradores"] = dados
-
             st.success(f"{len(df)} colaboradores carregados")
             st.dataframe(df, width="stretch", height=800)
 
@@ -50,9 +47,6 @@ if st.button("Buscar Ponto"):
             dados = resumo_ponto_por_data(data)
             df = pd.DataFrame(dados)
 
-            # 🔥 salva no estado
-            st.session_state["resumo"] = dados
-
             st.dataframe(df, width="stretch")
 
             salvar_no_sheets(dados)
@@ -72,18 +66,9 @@ if st.button("Gerar Controle"):
 
     with st.spinner("Processando controle..."):
         try:
-
-            # 🔥 usa cache do app
-            colaboradores = st.session_state.get("colaboradores")
-            dados = st.session_state.get("resumo")
-
-            if not colaboradores:
-                st.error("Atualize os colaboradores primeiro")
-                st.stop()
-
-            if not dados:
-                st.error("Busque o ponto primeiro")
-                st.stop()
+            # 🔥 TOTALMENTE INDEPENDENTE
+            colaboradores = listar_colaboradores_ativos()
+            dados = resumo_ponto_por_data(data)
 
             resultado = registrar_controle_diario(dados, colaboradores)
 
