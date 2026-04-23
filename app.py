@@ -103,3 +103,33 @@ if st.button("Salvar Férias"):
 
     except Exception as e:
         st.error(str(e))
+
+        st.subheader("Lançar Férias")
+
+colaboradores = listar_colaboradores_ativos()
+
+nomes = [c["Nome"] for c in colaboradores]
+
+nome_selecionado = st.selectbox("Selecionar colaborador", nomes)
+
+inicio = st.date_input("Data início férias", key="ferias_inicio")
+fim = st.date_input("Data fim férias", key="ferias_fim")
+
+if st.button("Cadastrar Férias"):
+
+    try:
+        # 🔥 encontra ID
+        emp = next(c for c in colaboradores if c["Nome"] == nome_selecionado)
+
+        from services.pontomais import criar_ferias
+
+        criar_ferias(
+            employee_id=emp["ID"],
+            inicio=inicio.strftime("%d/%m/%Y"),
+            fim=fim.strftime("%d/%m/%Y")
+        )
+
+        st.success("Férias cadastradas com sucesso")
+
+    except Exception as e:
+        st.error(str(e))

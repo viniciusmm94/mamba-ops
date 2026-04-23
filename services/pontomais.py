@@ -218,3 +218,35 @@ def get_absences(employee_id):
 
     data = response.json()
     return data.get("absences", [])
+
+def criar_ferias(employee_id, inicio, fim):
+
+    import requests
+    import streamlit as st
+
+    BASE_URL = "https://api.pontomais.com.br/external_api/v1"
+    TOKEN = st.secrets["PONTOMAIS_TOKEN"]
+
+    url = f"{BASE_URL}/employees/{employee_id}/absences"
+
+    payload = {
+        "start_date": inicio,   # DD/MM/YYYY
+        "end_date": fim,
+        "observation": "Férias",
+        "absence_type": 2,  # 🔥 2 = Férias
+        "is_medical_certificate": False
+    }
+
+    response = requests.post(
+        url,
+        json=payload,
+        headers={
+            "access-token": TOKEN,
+            "Content-Type": "application/json"
+        }
+    )
+
+    if response.status_code not in [200, 201]:
+        raise Exception(response.text)
+
+    return response.json()
