@@ -46,7 +46,7 @@ with tabs[3]:
 # 🔹 TAB 2 — PONTO
 # ==============================
 
-with tabs[1]:
+with tabs[0]:
     st.subheader("Resumo de Ponto")
 
     data_input = st.date_input("Selecione a data", key="ponto_data")
@@ -72,7 +72,7 @@ with tabs[1]:
 # 🔹 TAB 3 — CONTROLE
 # ==============================
 
-with tabs[0]:
+with tabs[1]:
     st.subheader("Controle Diário")
 
     data_input_ctrl = st.date_input("Data para controle", key="controle_data")
