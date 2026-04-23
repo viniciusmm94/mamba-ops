@@ -293,23 +293,3 @@ def editar_ausencia(employee_id, absence_id, inicio, fim, tipo):
 
     return response.json()
 
-from datetime import datetime
-
-def encontrar_ausencia_por_periodo(absences, inicio, fim):
-
-    inicio_novo = datetime.strptime(inicio, "%d/%m/%Y")
-    fim_novo = datetime.strptime(fim, "%d/%m/%Y")
-
-    for abs in absences:
-        try:
-            inicio_existente = datetime.strptime(abs["start_date"], "%d/%m/%Y")
-            fim_existente = datetime.strptime(abs["end_date"], "%d/%m/%Y")
-
-            # 🔥 verifica sobreposição
-            if not (fim_novo < inicio_existente or inicio_novo > fim_existente):
-                return abs
-
-        except:
-            continue
-
-    return None
