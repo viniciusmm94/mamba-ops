@@ -128,22 +128,21 @@ with tabs[0]:
 
     data_input_ctrl = st.date_input("Data para controle", key="controle_data")
 
-if st.button("Gerar Controle"):
-    try:
-        with st.spinner("Gerando relatório..."):
-            data = data_input_ctrl.strftime("%d/%m/%Y")
+    if st.button("Gerar Controle"):
+        try:
+            with st.spinner("Gerando relatório..."):
+                data = data_input_ctrl.strftime("%d/%m/%Y")
 
-            colaboradores = listar_colaboradores_ativos()
-            dados = resumo_ponto_por_data(data)
+                colaboradores = listar_colaboradores_ativos()
+                dados = resumo_ponto_por_data(data)
 
-            resultado = registrar_controle_diario(dados, colaboradores)
-            df = pd.DataFrame(resultado)
+                resultado = registrar_controle_diario(dados, colaboradores)
+                df = pd.DataFrame(resultado)
 
-        # 🔥 só mostra o resultado, sem mensagem fixa
-        st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True)
 
-    except Exception as e:
-        st.error(str(e))
+        except Exception as e:
+            st.error(str(e))
 
 
 # ==============================
