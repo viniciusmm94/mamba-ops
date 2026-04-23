@@ -149,10 +149,10 @@ with tabs[2]:
             st.markdown(
                 """
                 <div style="
-                    background-color: #262730;
+                    background-color: #fff3cd;
                     padding: 8px 12px;
                     border-radius: 6px;
-                    color: #ccc;
+                    color: #856404;
                     font-size: 13px;
                     margin-top: -8px;
                     margin-bottom: 8px;
