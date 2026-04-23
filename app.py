@@ -128,8 +128,9 @@ with tabs[0]:
 
     data_input_ctrl = st.date_input("Data para controle", key="controle_data")
 
-    if st.button("Gerar Controle"):
-        try:
+if st.button("Gerar Controle"):
+    try:
+        with st.spinner("Gerando relatório..."):
             data = data_input_ctrl.strftime("%d/%m/%Y")
 
             colaboradores = listar_colaboradores_ativos()
@@ -138,11 +139,11 @@ with tabs[0]:
             resultado = registrar_controle_diario(dados, colaboradores)
             df = pd.DataFrame(resultado)
 
-            st.success(f"{len(df)} registros encontrados")
-            st.dataframe(df, use_container_width=True)
+        st.success(f"{len(df)} registros encontrados")
+        st.dataframe(df, use_container_width=True)
 
-        except Exception as e:
-            st.error(str(e))
+    except Exception as e:
+        st.error(str(e))
 
 
 # ==============================
