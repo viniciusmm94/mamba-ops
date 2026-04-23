@@ -9,7 +9,36 @@ LIMITE_PADRAO_ATRASO = "08:15"
 
 NOMES_EXCLUIDOS = {
     'Anthony Chub Generoso',
-    'Ariane de Queiroz Proença Fernandes',
+'Ariane de Queiroz Proença Fernandes',
+'Arlindo Goes da Silva',
+'Beatriz Pereira Macia',
+'Bianca Oliveira Nôsa',
+'Carolina Mendes Fonseca',
+'Cristina Aparecida da Anunciação dos Santos Lima',
+'Débora Cristina Soares de Oliveira',
+'Gabriel Batista do Carmo Paiva',
+'Gabriel Ribeiro Dos Santos',
+'Gabriel Silva Soares',
+'Giovana da Silva Ribeiro',
+'Guilherme de Carvalho Rocha',
+'Jeniffer Lima Dias da Silva',
+'João Victor Gomes Dos Santos',
+'Lais Gabrielle Dias',
+'Laura Costa de Almeida',
+'Lucas Freire Rodrigues Croce Pereira',
+'Luísa Andrade Martins Moniz Teixeira',
+'Matheus Honorato Daniel',
+'Pedro Henrique Araujo Doconski',
+'Rafael Neves Rodrigues',
+'Roger Ferreira Gomes',
+'Vitor Leite Rodrigues Lopes',
+'Vitória Carvalho Santana',
+'Wellington Dantas Moreira',
+'Leonardo Roversi Coelho',
+'Lygia Ferreira da Silva',
+'Graziele Rocha Vasconcelos',
+'Kaique Monteiro dos Santos',
+
 }
 
 EXCECOES_ATRASO = {
