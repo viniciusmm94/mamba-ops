@@ -103,7 +103,6 @@ with tabs[2]:
 
     from services.pontomais import get_absences, criar_ferias, editar_ausencia
 
-    # 🔥 CACHE (performance)
     @st.cache_data
     def get_colaboradores():
         return listar_colaboradores_ativos()
@@ -112,11 +111,10 @@ with tabs[2]:
     nomes = [c["Nome"] for c in colaboradores]
 
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
-
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
     # ==============================
-    # 🔹 VISUALIZAR FÉRIAS ATUAIS
+    # 🔹 VISUALIZAR FÉRIAS
     # ==============================
 
     st.markdown("### Férias atuais")
@@ -126,7 +124,27 @@ with tabs[2]:
 
     if absences:
         df_abs = pd.DataFrame(absences)
+
+        colunas_desejadas = [
+            "id",
+            "start_date",
+            "end_date",
+            "observation",
+            "total_days"
+        ]
+
+        df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
+
+        df_abs = df_abs.rename(columns={
+            "id": "ID",
+            "start_date": "Início",
+            "end_date": "Fim",
+            "observation": "Tipo",
+            "total_days": "Dias"
+        })
+
         st.dataframe(df_abs, use_container_width=True)
+
     else:
         st.info("Nenhuma ausência encontrada")
 
@@ -135,7 +153,7 @@ with tabs[2]:
     col1, col2 = st.columns(2)
 
     # ==============================
-    # 🔹 FORM — CADASTRAR
+    # 🔹 CADASTRAR
     # ==============================
 
     with col1:
@@ -145,35 +163,27 @@ with tabs[2]:
             inicio = st.date_input("Data início", key="create_inicio")
             fim = st.date_input("Data fim", key="create_fim")
 
-            submit_create = st.form_submit_button("Cadastrar")
-
-            if submit_create:
+            if st.form_submit_button("Cadastrar"):
                 try:
-                    # 🔥 validação
                     if inicio > fim:
-                        st.warning("Data de início maior que fim")
+                        st.warning("Data inválida")
                         st.stop()
 
-                    with st.spinner("Cadastrando férias..."):
+                    with st.spinner("Cadastrando..."):
                         criar_ferias(
-                            employee_id=emp["ID"],
-                            inicio=inicio.strftime("%d/%m/%Y"),
-                            fim=fim.strftime("%d/%m/%Y")
+                            emp["ID"],
+                            inicio.strftime("%d/%m/%Y"),
+                            fim.strftime("%d/%m/%Y")
                         )
 
-                    st.success(
-                        f"Férias cadastradas para {nome_sel} de "
-                        f"{inicio.strftime('%d/%m')} até {fim.strftime('%d/%m')}"
-                    )
-
+                    st.success("Férias cadastradas")
                     st.rerun()
 
-                except Exception as e:
-                    st.error("Erro ao cadastrar férias")
-
+                except:
+                    st.error("Erro ao cadastrar")
 
     # ==============================
-    # 🔹 FORM — EDITAR
+    # 🔹 EDITAR
     # ==============================
 
     with col2:
@@ -183,12 +193,10 @@ with tabs[2]:
             inicio_edit = st.date_input("Novo início", key="edit_inicio")
             fim_edit = st.date_input("Novo fim", key="edit_fim")
 
-            submit_edit = st.form_submit_button("Salvar Alteração")
-
-            if submit_edit:
+            if st.form_submit_button("Salvar"):
                 try:
                     if inicio_edit > fim_edit:
-                        st.warning("Data de início maior que fim")
+                        st.warning("Data inválida")
                         st.stop()
 
                     inicio_str = inicio_edit.strftime("%d/%m/%Y")
@@ -201,24 +209,20 @@ with tabs[2]:
                     )
 
                     if not ausencia:
-                        st.error("Nenhuma ausência encontrada nesse período")
+                        st.error("Não encontrada")
                         st.stop()
 
-                    with st.spinner("Atualizando férias..."):
+                    with st.spinner("Atualizando..."):
                         editar_ausencia(
-                            employee_id=emp["ID"],
-                            absence_id=ausencia["id"],
-                            inicio=inicio_str,
-                            fim=fim_str,
-                            tipo="ferias"
+                            emp["ID"],
+                            ausencia["id"],
+                            inicio_str,
+                            fim_str,
+                            "ferias"
                         )
 
-                    st.success(
-                        f"Férias atualizadas para {nome_sel} "
-                        f"({inicio_str} → {fim_str})"
-                    )
-
+                    st.success("Atualizado")
                     st.rerun()
 
-                except Exception as e:
-                    st.error("Erro ao editar férias")
+                except:
+                    st.error("Erro ao editar")
