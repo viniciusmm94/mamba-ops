@@ -185,7 +185,7 @@ with tabs[2]:
                     background-color: rgb(197, 180, 96);
                     border: 1px solid rgba(0,0,0,0.1);
                     padding: 6px 12px;
-                    border-radius: 5px;
+                    border-radius: 4px;
                     color: #333;
                     font-size: 11px;
                     margin-top: -16px;
