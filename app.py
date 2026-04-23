@@ -157,7 +157,7 @@ with tabs[2]:
                     margin-top: -6px;
                     margin-bottom: 6px;
                 ">
-                    Nenhuma ausência encontrada
+                    Nenhum registro encontrado
                 </div>
                 """,
                 unsafe_allow_html=True
