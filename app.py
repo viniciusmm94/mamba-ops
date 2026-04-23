@@ -113,132 +113,58 @@ with tabs[2]:
     nome_sel = st.selectbox("Selecionar colaborador", nomes)
     emp = next(c for c in colaboradores if c["Nome"] == nome_sel)
 
-    # ==============================
-    # 🔹 VISUALIZAR FÉRIAS
-    # ==============================
+# ==============================
+# 🔹 VISUALIZAR FÉRIAS
+# ==============================
 
-    st.markdown("### Férias atuais")
+st.markdown("### Férias atuais")
 
-    with st.spinner("Carregando dados..."):
-        absences = get_absences(emp["ID"])
+with st.spinner("Carregando dados..."):
+    absences = get_absences(emp["ID"])
 
-        if absences:
-            df_abs = pd.DataFrame(absences)
+if absences:
+    df_abs = pd.DataFrame(absences)
 
-            colunas_desejadas = [
-                "id",
-                "start_date",
-                "end_date",
-                "observation",
-                "total_days"
-            ]
+    colunas_desejadas = [
+        "id",
+        "start_date",
+        "end_date",
+        "observation",
+        "total_days"
+    ]
 
-            df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
+    df_abs = df_abs[[c for c in colunas_desejadas if c in df_abs.columns]]
 
-            df_abs = df_abs.rename(columns={
-                "id": "ID",
-                "start_date": "Início",
-                "end_date": "Fim",
-                "observation": "Tipo",
-                "total_days": "Dias"
-            })
+    df_abs = df_abs.rename(columns={
+        "id": "ID",
+        "start_date": "Início",
+        "end_date": "Fim",
+        "observation": "Tipo",
+        "total_days": "Dias"
+    })
 
-            st.dataframe(df_abs, use_container_width=True)
+    st.dataframe(df_abs, use_container_width=True)
 
-        else:
-            st.markdown(
-                """
-                <div style="
-                    background-color: #fff3cd;
-                    padding: 6px 12px;
-                    border-radius: 5px;
-                    color: #856404;
-                    font-size: 11px;
-                    margin-top: -6px;
-                    margin-bottom: 6px;
-                ">
-                    Nenhum registro encontrado
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
+else:
+    st.markdown(
+        """
+        <div style="
+            background-color: rgb(197, 180, 96);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #333;
+            font-size: 13px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        ">
+            Nenhuma ausência encontrada
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-            st.divider()
+# 🔥 FORA DO IF/ELSE
+st.divider()
 
-            col1, col2 = st.columns(2)
-
-            # ==============================
-            # 🔹 CADASTRAR
-            # ==============================
-
-            with col1:
-                st.markdown("### Cadastrar Férias")
-
-                with st.form("form_create"):
-                    inicio = st.date_input("Data início", key="create_inicio")
-                    fim = st.date_input("Data fim", key="create_fim")
-
-                    if st.form_submit_button("Cadastrar"):
-                        try:
-                            if inicio > fim:
-                                st.warning("Data inválida")
-                                st.stop()
-
-                            with st.spinner("Cadastrando..."):
-                                criar_ferias(
-                                    emp["ID"],
-                                    inicio.strftime("%d/%m/%Y"),
-                                    fim.strftime("%d/%m/%Y")
-                                )
-
-                            st.success("Férias cadastradas")
-                            st.rerun()
-
-                        except:
-                            st.error("Erro ao cadastrar")
-
-            # ==============================
-            # 🔹 EDITAR
-            # ==============================
-
-            with col2:
-                st.markdown("### Editar Férias")
-
-                with st.form("form_edit"):
-                    inicio_edit = st.date_input("Novo início", key="edit_inicio")
-                    fim_edit = st.date_input("Novo fim", key="edit_fim")
-
-                    if st.form_submit_button("Salvar"):
-                        try:
-                            if inicio_edit > fim_edit:
-                                st.warning("Data inválida")
-                                st.stop()
-
-                            inicio_str = inicio_edit.strftime("%d/%m/%Y")
-                            fim_str = fim_edit.strftime("%d/%m/%Y")
-
-                            ausencia = encontrar_ausencia_por_periodo(
-                                absences,
-                                inicio_str,
-                                fim_str
-                            )
-
-                            if not ausencia:
-                                st.error("Não encontrada")
-                                st.stop()
-
-                            with st.spinner("Atualizando..."):
-                                editar_ausencia(
-                                    emp["ID"],
-                                    ausencia["id"],
-                                    inicio_str,
-                                    fim_str,
-                                    "ferias"
-                                )
-
-                            st.success("Atualizado")
-                            st.rerun()
-
-                        except:
-                            st.error("Erro ao editar")
+col1, col2 = st.columns(2)
