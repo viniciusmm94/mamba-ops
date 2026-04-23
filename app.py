@@ -168,3 +168,78 @@ else:
 st.divider()
 
 col1, col2 = st.columns(2)
+
+            # ==============================
+            # 🔹 CADASTRAR
+            # ==============================
+
+            with col1:
+                st.markdown("### Cadastrar Férias")
+
+                with st.form("form_create"):
+                    inicio = st.date_input("Data início", key="create_inicio")
+                    fim = st.date_input("Data fim", key="create_fim")
+
+                    if st.form_submit_button("Cadastrar"):
+                        try:
+                            if inicio > fim:
+                                st.warning("Data inválida")
+                                st.stop()
+
+                            with st.spinner("Cadastrando..."):
+                                criar_ferias(
+                                    emp["ID"],
+                                    inicio.strftime("%d/%m/%Y"),
+                                    fim.strftime("%d/%m/%Y")
+                                )
+
+                            st.success("Férias cadastradas")
+                            st.rerun()
+
+                        except:
+                            st.error("Erro ao cadastrar")
+
+            # ==============================
+            # 🔹 EDITAR
+            # ==============================
+
+            with col2:
+                st.markdown("### Editar Férias")
+
+                with st.form("form_edit"):
+                    inicio_edit = st.date_input("Novo início", key="edit_inicio")
+                    fim_edit = st.date_input("Novo fim", key="edit_fim")
+
+                    if st.form_submit_button("Salvar"):
+                        try:
+                            if inicio_edit > fim_edit:
+                                st.warning("Data inválida")
+                                st.stop()
+
+                            inicio_str = inicio_edit.strftime("%d/%m/%Y")
+                            fim_str = fim_edit.strftime("%d/%m/%Y")
+
+                            ausencia = encontrar_ausencia_por_periodo(
+                                absences,
+                                inicio_str,
+                                fim_str
+                            )
+
+                            if not ausencia:
+                                st.error("Não encontrada")
+                                st.stop()
+
+                            with st.spinner("Atualizando..."):
+                                editar_ausencia(
+                                    emp["ID"],
+                                    ausencia["id"],
+                                    inicio_str,
+                                    fim_str,
+                                    "ferias"
+                                )
+
+                            st.success("Atualizado")
+                            st.rerun()
+
+                        except:
+                            st.error("Erro ao editar")
