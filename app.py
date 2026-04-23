@@ -19,7 +19,7 @@ st.markdown(
 st.markdown(
     """
     <h1 style="
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-weight: 700;
         font-size: 32px;
         margin-bottom: 0;
