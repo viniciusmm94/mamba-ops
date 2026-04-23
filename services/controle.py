@@ -4,8 +4,6 @@ def normalizar_hora(valor):
 
     return str(valor).strip().replace("h", ":")
 
-def is_excluido(nome):
-    return nome.strip() in NOMES_EXCLUIDOS
 
 LIMITE_PADRAO_ATRASO = "08:15"
 
@@ -22,6 +20,10 @@ EXCECOES_ATRASO = {
 }
 
 
+def is_excluido(nome):
+    return nome.strip() in NOMES_EXCLUIDOS
+
+
 def registrar_controle_diario(dados_resumo, colaboradores):
 
     # =========================
@@ -34,7 +36,7 @@ def registrar_controle_diario(dados_resumo, colaboradores):
         nome = (c.get("Nome") or "").strip()
         lider = (c.get("Equipe") or "").strip()
 
-        if not nome or nome in NOMES_EXCLUIDOS:
+        if not nome or is_excluido(nome):
             continue
 
         colaboradores_map[nome] = lider
@@ -57,6 +59,9 @@ def registrar_controle_diario(dados_resumo, colaboradores):
         if not nome or not hora:
             continue
 
+        if is_excluido(nome):
+            continue
+
         quem_bateu[nome] = hora
 
     if not data_ponto:
@@ -70,13 +75,11 @@ def registrar_controle_diario(dados_resumo, colaboradores):
 
     for nome, hora_raw in quem_bateu.items():
 
-        if nome in NOMES_EXCLUIDOS:
+        if is_excluido(nome):
             continue
 
         hora = normalizar_hora(hora_raw)
         limite = EXCECOES_ATRASO.get(nome, LIMITE_PADRAO_ATRASO)
-
-
 
         if hora > limite:
             resultado.append({
@@ -91,28 +94,18 @@ def registrar_controle_diario(dados_resumo, colaboradores):
     # AUSENTES
     # =========================
 
-for nome, lider in colaboradores_map.items():
+    for nome, lider in colaboradores_map.items():
 
-    if is_excluido(nome):
-        continue
+        if is_excluido(nome):
+            continue
 
-for nome, lider in colaboradores_map.items():
-
-    if is_excluido(nome):
-        continue
-
-for nome, lider in colaboradores_map.items():
-
-    if is_excluido(nome):
-        continue
-
-    if nome not in quem_bateu:
-        resultado.append({
-            "Data": data_ponto,
-            "Nome": nome,
-            "Líder": lider,
-            "Status": "Ausente",
-            "Horário": ""
-        })
+        if nome not in quem_bateu:
+            resultado.append({
+                "Data": data_ponto,
+                "Nome": nome,
+                "Líder": lider,
+                "Status": "Ausente",
+                "Horário": ""
+            })
 
     return resultado
