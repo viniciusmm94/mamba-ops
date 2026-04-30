@@ -5,7 +5,7 @@ from services.pontomais import get_absences
 # 🔹 CONFIG
 # =========================
 
-LIMITE_PADRAO_ATRASO = "08:15"
+LIMITE_PADRAO_ATRASO = "08:05"
 
 NOMES_EXCLUIDOS = {
 'Anthony Chub Generoso',
